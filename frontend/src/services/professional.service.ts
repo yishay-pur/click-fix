@@ -3,6 +3,7 @@ import type { Professional, ProfessionalStats } from '../types/professional.type
 import type { Review } from '../types/review.types';
 import type { Gender } from '../types/user.types';
 import type { QuoteRequest } from '../types/quote.types';
+import { mockService } from './mock.service';
 
 export interface SearchParams {
   query?: string;
@@ -10,6 +11,7 @@ export interface SearchParams {
   city?: string;
   gender?: Gender;
   minRating?: number;
+  shomerShabbat?: boolean;
   sortBy?: 'rating' | 'reviews' | 'price';
   page?: number;
   limit?: number;
@@ -31,28 +33,44 @@ export interface ProfessionalReviewsResponse {
 
 export const professionalService = {
   search: async (params: SearchParams): Promise<SearchResponse> => {
-    const response = await api.get('/employees', { params });
-    const data = response.data;
-    // If response is an array (from getAllEmployees), wrap it
-    if (Array.isArray(data)) {
-      return {
-        professionals: data,
-        total: data.length,
-        page: 1,
-        totalPages: 1,
-      };
+    try {
+      // Try to get data from server first
+      const response = await api.get<SearchResponse>('/employees/search', { params });
+      return response.data;
+    } catch (error) {
+      // If server is unavailable, fallback to mock data
+      console.warn('Server unavailable, using mock data for search');
+      return await mockService.searchProfessionals(params);
     }
-    return data as SearchResponse;
   },
 
   getById: async (id: string): Promise<Professional> => {
-    const response = await api.get<Professional>(`/employees/${id}`);
-    return response.data;
+    try {
+      const response = await api.get<Professional>(`/employees/${id}`);
+      return response.data;
+    } catch (error) {
+      // If server is unavailable, try to get from mock data
+      console.warn('Server unavailable, using mock data for professional details');
+      const professionals = await mockService.getProfessionals();
+      const professional = professionals.find(p => p.id === id);
+      if (!professional) {
+        throw new Error('Professional not found');
+      }
+      return professional;
+    }
   },
 
   getFeatured: async (limit = 4): Promise<Professional[]> => {
-    const response = await api.get<any[]>('/employees');
-    return (response.data || []).slice(0, limit);
+    try {
+      // Try to get featured professionals from server
+      const response = await api.get<Professional[]>('/employees/featured', { params: { limit } });
+      return response.data;
+    } catch (error) {
+      // If server is unavailable, fallback to mock data
+      console.warn('Server unavailable, using mock data for featured professionals');
+      const professionals = await mockService.getProfessionals();
+      return professionals.slice(0, limit);
+    }
   },
 
   getReviews: async (

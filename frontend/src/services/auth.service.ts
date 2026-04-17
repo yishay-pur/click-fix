@@ -12,6 +12,11 @@ export const authService = {
     return response.data;
   },
 
+  async adminLogin(credentials: LoginCredentials): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/admin/login', credentials);
+    return response.data;
+  },
+
   async register(data: RegisterData): Promise<AuthResponse> {
     const response = await api.post<AuthResponse>('/auth/register', data);
     return response.data;

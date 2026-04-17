@@ -4,27 +4,18 @@ import authMiddleware from "../middleware/authMiddleware";
 
 const router = Router();
 
-router.use(authMiddleware);
-
-// GET all employees
+// PUBLIC - Profile browsing endpoints (no user data)
+router.get("/search", employeeController.searchEmployees);
+router.get("/:id", employeeController.getEmployeeById);
 router.get("/", employeeController.getAllEmployees);
 
-// GET employee stats
+// PROTECTED - User data endpoints (requires auth)
+router.use(authMiddleware);
+
 router.get("/:id/stats", employeeController.getEmployeeStats);
-
-// GET employee recent requests
 router.get("/:id/recent-requests", employeeController.getRecentRequests);
-
-// GET employee by ID
-router.get("/:id", employeeController.getEmployeeById);
-
-// POST create employee
 router.post("/", employeeController.createEmployee);
-
-// PUT update employee
 router.put("/:id", employeeController.updateEmployee);
-
-// DELETE employee
 router.delete("/:id", employeeController.deleteEmployee);
 
 export default router;

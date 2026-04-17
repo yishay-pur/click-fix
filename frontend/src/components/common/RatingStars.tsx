@@ -1,10 +1,10 @@
-import { Star } from 'lucide-react';
-import { classNames } from '../../utils/helpers';
+import { Star } from "lucide-react";
+import { classNames } from "../../utils/helpers";
 
 interface RatingStarsProps {
   rating: number;
   maxRating?: number;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   showValue?: boolean;
   reviewCount?: number;
   interactive?: boolean;
@@ -13,21 +13,21 @@ interface RatingStarsProps {
 }
 
 const sizeClasses = {
-  sm: 'w-4 h-4',
-  md: 'w-5 h-5',
-  lg: 'w-6 h-6',
+  sm: "w-4 h-4",
+  md: "w-5 h-5",
+  lg: "w-6 h-6",
 };
 
 const textSizeClasses = {
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg',
+  sm: "text-sm",
+  md: "text-base",
+  lg: "text-lg",
 };
 
 export function RatingStars({
-  rating,
+  rating = 0,
   maxRating = 5,
-  size = 'md',
+  size = "md",
   showValue = true,
   reviewCount,
   interactive = false,
@@ -43,7 +43,7 @@ export function RatingStars({
   };
 
   return (
-    <div className={classNames('flex items-center gap-1', className)}>
+    <div className={classNames("flex items-center gap-1", className)}>
       <div className="flex gap-0.5">
         {stars.map((star) => {
           const filled = star <= Math.floor(rating);
@@ -57,14 +57,15 @@ export function RatingStars({
               onClick={() => handleClick(star)}
               disabled={!interactive}
               className={classNames(
-                'relative',
-                interactive && 'cursor-pointer hover:scale-110 transition-transform',
-                !interactive && 'cursor-default'
+                "relative",
+                interactive &&
+                  "cursor-pointer hover:scale-110 transition-transform",
+                !interactive && "cursor-default"
               )}
             >
               {/* Empty star (background) */}
               <Star
-                className={classNames(sizeClasses[size], 'text-secondary-300')}
+                className={classNames(sizeClasses[size], "text-secondary-300")}
                 fill="currentColor"
               />
               {/* Filled star (overlay) */}
@@ -72,10 +73,14 @@ export function RatingStars({
                 <Star
                   className={classNames(
                     sizeClasses[size],
-                    'text-primary-500 absolute top-0 right-0'
+                    "text-primary-500 absolute top-0 right-0"
                   )}
                   fill="currentColor"
-                  style={partial ? { clipPath: `inset(0 ${100 - percentage}% 0 0)` } : undefined}
+                  style={
+                    partial
+                      ? { clipPath: `inset(0 ${100 - percentage}% 0 0)` }
+                      : undefined
+                  }
                 />
               )}
             </button>
@@ -83,13 +88,20 @@ export function RatingStars({
         })}
       </div>
       {showValue && (
-        <span className={classNames(textSizeClasses[size], 'text-secondary-700 font-medium mr-1')}>
+        <span
+          className={classNames(
+            textSizeClasses[size],
+            "text-secondary-700 font-medium mr-1"
+          )}
+        >
           {rating.toFixed(1)}
         </span>
       )}
       {reviewCount !== undefined && (
-        <span className={classNames(textSizeClasses[size], 'text-secondary-500')}>
-          ({reviewCount.toLocaleString('he-IL')})
+        <span
+          className={classNames(textSizeClasses[size], "text-secondary-500")}
+        >
+          ({reviewCount.toLocaleString("he-IL")})
         </span>
       )}
     </div>

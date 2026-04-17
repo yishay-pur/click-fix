@@ -5,37 +5,43 @@
  * These adapters convert server responses to UI-compatible formats.
  */
 
-import type { Chat, Message } from '../types/chat.types';
-import type { Notification } from '../types/notification.types';
-import type { Complaint } from '../types/complaint.types';
+import type { Chat, Message } from "../types/chat.types";
+import type { Notification } from "../types/notification.types";
+import type { Complaint } from "../types/complaint.types";
 import type {
   ServerChat,
   ServerMessage,
   ServerNotification,
   ServerComplaint,
-} from '../types/server.types';
+  ServerAuthResponse,
+  ServerCategory,
+  ServerEmployee,
+  ServerReview,
+  ServerUser,
+} from "../types/server.types";
+import {
+  Category,
+  Professional,
+  RatingBreakdown,
+  Review,
+  User,
+  UserRole,
+} from "../types";
 
-// ============================================
-// User Adapters
-// ============================================
-
-/**
- * Convert server auth response user to frontend User format
- */
 export const adaptServerAuthToUser = (
   serverAuth: ServerAuthResponse,
-  role: UserRole = 'customer'
+  role: UserRole = "customer"
 ): { user: User; token: string } => {
   return {
     token: serverAuth.token,
     user: {
       id: serverAuth.user.id.toString(),
       email: serverAuth.user.email,
-      firstName: serverAuth.user.firstName || '',
-      lastName: serverAuth.user.lastName || '',
-      phone: '',
+      firstName: serverAuth.user.firstName || "",
+      lastName: serverAuth.user.lastName || "",
+      phone: "",
       role: (serverAuth.user.role as UserRole) || role,
-      status: 'active',
+      status: "active",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -45,16 +51,19 @@ export const adaptServerAuthToUser = (
 /**
  * Convert full server user to frontend User
  */
-export const adaptServerUserToUser = (serverUser: ServerUser, role: UserRole = 'customer'): User => {
+export const adaptServerUserToUser = (
+  serverUser: ServerUser,
+  role: UserRole = "customer"
+): User => {
   return {
     id: serverUser.id.toString(),
     email: serverUser.email,
-    firstName: serverUser.firstName || '',
-    lastName: serverUser.lastName || '',
-    phone: '',
+    firstName: serverUser.firstName || "",
+    lastName: serverUser.lastName || "",
+    phone: "",
     city: serverUser.address || undefined,
     role,
-    status: 'active',
+    status: "active",
     createdAt: new Date(serverUser.createdAt),
     updatedAt: new Date(serverUser.updatedAt),
   };
@@ -67,22 +76,24 @@ export const adaptServerUserToUser = (serverUser: ServerUser, role: UserRole = '
 /**
  * Convert server Employee to frontend Professional format
  */
-export const adaptEmployeeToProfessional = (employee: ServerEmployee): Professional => {
+export const adaptEmployeeToProfessional = (
+  employee: ServerEmployee
+): Professional => {
   const rating = calculateRatingFromServerReviews(employee.reviews || []);
   const category = employee.categories?.[0];
 
   return {
     id: employee.id.toString(),
-    email: employee.email || '',
-    firstName: employee.firstName || '',
-    lastName: employee.lastName || '',
+    email: employee.email || "",
+    firstName: employee.firstName || "",
+    lastName: employee.lastName || "",
     phone: employee.phone,
     city: employee.area || undefined,
-    role: 'professional',
-    status: 'approved',
-    categoryId: category?.id?.toString() || '',
-    categoryName: category?.name || '',
-    description: category?.description || '',
+    role: "professional",
+    status: "approved",
+    categoryId: category?.id?.toString() || "",
+    categoryName: category?.name || "",
+    description: category?.description || "",
     yearsOfExperience: undefined,
     serviceAreas: employee.area ? [employee.area] : [],
     workingHours: [],
@@ -100,7 +111,9 @@ export const adaptEmployeeToProfessional = (employee: ServerEmployee): Professio
 /**
  * Calculate rating breakdown from server reviews
  */
-const calculateRatingFromServerReviews = (reviews: ServerReview[]): RatingBreakdown => {
+const calculateRatingFromServerReviews = (
+  reviews: ServerReview[]
+): RatingBreakdown => {
   if (!reviews || reviews.length === 0) {
     return {
       overall: 0,
@@ -144,14 +157,18 @@ const calculateRatingFromServerReviews = (reviews: ServerReview[]): RatingBreakd
 /**
  * Convert server Review to frontend Review format
  */
-export const adaptServerReviewToReview = (serverReview: ServerReview): Review => {
+export const adaptServerReviewToReview = (
+  serverReview: ServerReview
+): Review => {
   const avgRating = calculateServerReviewAverage(serverReview);
 
   return {
     id: serverReview.id.toString(),
-    professionalId: serverReview.employeeId?.toString() || '',
-    customerId: serverReview.userId?.toString() || '',
-    customerName: serverReview.user ? `${serverReview.user.firstName} ${serverReview.user.lastName}` : 'משתמש אנונימי',
+    professionalId: serverReview.employeeId?.toString() || "",
+    customerId: serverReview.userId?.toString() || "",
+    customerName: serverReview.user
+      ? `${serverReview.user.firstName} ${serverReview.user.lastName}`
+      : "משתמש אנונימי",
     ratings: {
       reliability: serverReview.performanceRate || 0,
       service: serverReview.serviceRate || 0,
@@ -160,19 +177,26 @@ export const adaptServerReviewToReview = (serverReview: ServerReview): Review =>
       professionalism: serverReview.performanceRate || 0,
     },
     overallRating: avgRating,
-    content: serverReview.comment || '',
+    content: serverReview.comment || "",
     isVerified: true,
     createdAt: new Date(serverReview.createdAt),
-    updatedAt: serverReview.updatedAt ? new Date(serverReview.updatedAt) : undefined,
+    updatedAt: serverReview.updatedAt
+      ? new Date(serverReview.updatedAt)
+      : undefined,
   };
 };
 
 const calculateServerReviewAverage = (review: ServerReview): number => {
-  const ratings = [review.priceRate, review.serviceRate, review.performanceRate].filter(
-    (r): r is number => r !== null && r !== undefined
-  );
+  const ratings = [
+    review.priceRate,
+    review.serviceRate,
+    review.performanceRate,
+  ].filter((r): r is number => r !== null && r !== undefined);
   if (ratings.length === 0) return 0;
-  return Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10;
+  return (
+    Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) /
+    10
+  );
 };
 
 // ============================================
@@ -181,21 +205,23 @@ const calculateServerReviewAverage = (review: ServerReview): number => {
 
 // Map father categories to icons
 const categoryIconMap: Record<string, string> = {
-  'חשמל ואלקטרוניקה': 'Zap',
-  'שירותים כלליים': 'Wrench',
-  'קוסמטיקה וטיפוח': 'Sparkles',
-  'מבנה ואינסטלציה': 'Droplet',
-  'עיצוב ןאדריכלות': 'Paintbrush',
+  "חשמל ואלקטרוניקה": "Zap",
+  "שירותים כלליים": "Wrench",
+  "קוסמטיקה וטיפוח": "Sparkles",
+  "מבנה ואינסטלציה": "Droplet",
+  "עיצוב ןאדריכלות": "Paintbrush",
 };
 
 /**
  * Convert server Category to frontend Category format
  */
-export const adaptServerCategoryToCategory = (serverCategory: ServerCategory): Category => {
+export const adaptServerCategoryToCategory = (
+  serverCategory: ServerCategory
+): Category => {
   return {
     id: serverCategory.id.toString(),
     name: serverCategory.name,
-    icon: categoryIconMap[serverCategory.fatherCategory || ''] || 'Briefcase',
+    icon: categoryIconMap[serverCategory.fatherCategory || ""] || "Briefcase",
     description: serverCategory.description,
     defaultQuestions: [],
     isActive: true,
@@ -215,12 +241,18 @@ export const adaptServerChatToChat = (serverChat: ServerChat): Chat => {
   return {
     id: serverChat.id.toString(),
     customerId: serverChat.customerId.toString(),
-    customerName: serverChat.customer ? `${serverChat.customer.firstName} ${serverChat.customer.lastName}` : '',
+    customerName: serverChat.customer
+      ? `${serverChat.customer.firstName} ${serverChat.customer.lastName}`
+      : "",
     professionalId: serverChat.professionalId.toString(),
-    professionalName: serverChat.professional ? `${serverChat.professional.firstName} ${serverChat.professional.lastName}` : '',
-    professionalImage: serverChat.professional?.profileImage || undefined,
+    professionalName: serverChat.professional
+      ? `${serverChat.professional.firstName} ${serverChat.professional.lastName}`
+      : "",
+    professionalImage: undefined,
     quoteRequestId: serverChat.quoteRequestId?.toString(),
-    lastMessage: serverChat.lastMessage ? adaptServerMessageToMessage(serverChat.lastMessage) : undefined,
+    lastMessage: serverChat.lastMessage
+      ? adaptServerMessageToMessage(serverChat.lastMessage)
+      : undefined,
     unreadCount: serverChat.unreadCount,
     createdAt: new Date(serverChat.createdAt),
     updatedAt: new Date(serverChat.updatedAt),
@@ -230,7 +262,9 @@ export const adaptServerChatToChat = (serverChat: ServerChat): Chat => {
 /**
  * Convert server Message to frontend Message format
  */
-export const adaptServerMessageToMessage = (serverMessage: ServerMessage): Message => {
+export const adaptServerMessageToMessage = (
+  serverMessage: ServerMessage
+): Message => {
   return {
     id: serverMessage.id.toString(),
     chatId: serverMessage.chatId.toString(),
@@ -252,7 +286,9 @@ export const adaptServerMessageToMessage = (serverMessage: ServerMessage): Messa
 /**
  * Convert server Notification to frontend Notification format
  */
-export const adaptServerNotificationToNotification = (serverNotification: ServerNotification): Notification => {
+export const adaptServerNotificationToNotification = (
+  serverNotification: ServerNotification
+): Notification => {
   return {
     id: serverNotification.id.toString(),
     userId: serverNotification.userId.toString(),
@@ -260,7 +296,7 @@ export const adaptServerNotificationToNotification = (serverNotification: Server
     title: serverNotification.title,
     content: serverNotification.content,
     link: serverNotification.link || undefined,
-    channels: serverNotification.channels as Notification['channels'],
+    channels: serverNotification.channels as Notification["channels"],
     isRead: serverNotification.isRead,
     createdAt: new Date(serverNotification.createdAt),
   };
@@ -273,21 +309,29 @@ export const adaptServerNotificationToNotification = (serverNotification: Server
 /**
  * Convert server Complaint to frontend Complaint format
  */
-export const adaptServerComplaintToComplaint = (serverComplaint: ServerComplaint): Complaint => {
+export const adaptServerComplaintToComplaint = (
+  serverComplaint: ServerComplaint
+): Complaint => {
   return {
     id: serverComplaint.id.toString(),
     userId: serverComplaint.userId.toString(),
-    userName: serverComplaint.user ? `${serverComplaint.user.firstName} ${serverComplaint.user.lastName}` : '',
+    userName: serverComplaint.user
+      ? `${serverComplaint.user.firstName} ${serverComplaint.user.lastName}`
+      : "",
     type: serverComplaint.type,
     targetProfessionalId: serverComplaint.targetProfessionalId?.toString(),
-    targetProfessionalName: serverComplaint.targetProfessional ? `${serverComplaint.targetProfessional.firstName} ${serverComplaint.targetProfessional.lastName}` : undefined,
+    targetProfessionalName: serverComplaint.targetProfessional
+      ? `${serverComplaint.targetProfessional.firstName} ${serverComplaint.targetProfessional.lastName}`
+      : undefined,
     subject: serverComplaint.subject,
     content: serverComplaint.content,
     status: serverComplaint.status,
     adminNotes: serverComplaint.adminNotes || undefined,
     createdAt: new Date(serverComplaint.createdAt),
     updatedAt: new Date(serverComplaint.updatedAt),
-    resolvedAt: serverComplaint.resolvedAt ? new Date(serverComplaint.resolvedAt) : undefined,
+    resolvedAt: serverComplaint.resolvedAt
+      ? new Date(serverComplaint.resolvedAt)
+      : undefined,
     resolvedBy: serverComplaint.resolvedBy?.toString(),
   };
 };

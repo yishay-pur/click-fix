@@ -3,21 +3,16 @@ import * as reviewController from "../controllers/reviewController";
 import authMiddleware from "../middleware/authMiddleware";
 
 const router = Router();
-router.use(authMiddleware);
 
-// GET all reviews
+// PUBLIC - Review browsing (no user data)
 router.get("/", reviewController.getAllReviews);
-
-// GET review by ID
 router.get("/:id", reviewController.getReviewById);
 
-// POST create review
+// PROTECTED - Review management (requires auth)
+router.use(authMiddleware);
+
 router.post("/", reviewController.createReview);
-
-// PUT update review
 router.put("/:id", reviewController.updateReview);
-
-// DELETE review
 router.delete("/:id", reviewController.deleteReview);
 
 export default router;

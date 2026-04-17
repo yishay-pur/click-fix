@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Star, Shield, Phone, Users, CheckCircle } from 'lucide-react';
 import { Button } from '../../components/common';
+import { professionalService } from '../../services/professional.service';
+import { mockService } from '../../services/mock.service';
 // import { MyButton } from "@library-example/my-button";
 
 export default function HomePage() {
@@ -50,12 +53,42 @@ export default function HomePage() {
     },
   ];
 
-  const stats = [
-    { value: '500+', label: 'בעלי מקצוע' },
-    { value: '10,000+', label: 'לקוחות מרוצים' },
-    { value: '25,000+', label: 'ביקורות' },
-    { value: '4.7', label: 'דירוג ממוצע' },
-  ];
+  const [stats, setStats] = useState([
+    { value: '0', label: 'בעלי מקצוע' },
+    { value: '0', label: 'לקוחות מרוצים' },
+    { value: '0', label: 'ביקורות' },
+    { value: '0', label: 'דירוג ממוצע' },
+  ]);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const [professionalsResult, customers] = await Promise.all([
+          professionalService.search({}),
+          mockService.getCustomers(),
+        ]);
+
+        const professionals = professionalsResult.professionals;
+        const totalProfessionals = professionals.length;
+        const totalCustomers = customers.length;
+        const totalReviews = professionals.reduce((sum, prof) => sum + (prof.reviewCount || 0), 0);
+        const averageRating = professionals.length
+          ? professionals.reduce((sum, prof) => sum + (prof.rating?.overall || 0), 0) / professionals.length
+          : 0;
+
+        setStats([
+          { value: `${totalProfessionals}`, label: 'בעלי מקצוע' },
+          { value: `${totalCustomers}`, label: 'לקוחות מרוצים' },
+          { value: `${totalReviews}`, label: 'ביקורות' },
+          { value: `${averageRating.toFixed(1)}`, label: 'דירוג ממוצע' },
+        ]);
+      } catch (error) {
+        console.error('Failed to load homepage stats:', error);
+      }
+    };
+
+    loadStats();
+  }, []);
 
   return (
     <div>

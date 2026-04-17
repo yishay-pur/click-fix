@@ -1,20 +1,20 @@
-import { Link } from 'react-router-dom';
-import { MapPin, CheckCircle, Clock } from 'lucide-react';
-import { classNames } from '../../utils/helpers';
-import { Avatar } from './Avatar';
-import { RatingStars } from './RatingStars';
-import { Button } from './Button';
-import type { Professional } from '../../types/professional.types';
+import { Link } from "react-router-dom";
+import { MapPin, CheckCircle, Clock } from "lucide-react";
+import { classNames } from "../../utils/helpers";
+import { Avatar } from "./Avatar";
+import { RatingStars } from "./RatingStars";
+import { Button } from "./Button";
+import type { Professional } from "../../types/professional.types";
 
 interface ProfessionalCardProps {
   professional: Professional;
-  variant?: 'default' | 'compact' | 'featured';
+  variant?: "default" | "compact" | "featured";
   className?: string;
 }
 
 export function ProfessionalCard({
   professional,
-  variant = 'default',
+  variant = "default",
   className,
 }: ProfessionalCardProps) {
   const {
@@ -32,40 +32,45 @@ export function ProfessionalCard({
   } = professional;
 
   const fullName = `${firstName} ${lastName}`;
-  const minPrice = services.length > 0
-    ? Math.min(...services.map(s => s.minPrice))
-    : null;
+  const minPrice =
+    services?.length > 0 ? Math.min(...services.map((s) => s.minPrice)) : null;
 
-  if (variant === 'compact') {
+  if (variant === "compact") {
     return (
       <Link
         to={`/professional/${id}`}
         className={classNames(
-          'flex items-center gap-4 p-4 bg-white rounded-lg border border-secondary-200',
-          'hover:border-primary-300 hover:shadow-sm transition-all',
+          "flex items-center gap-4 p-4 bg-white rounded-lg border border-secondary-200",
+          "hover:border-primary-300 hover:shadow-sm transition-all",
           className
         )}
       >
         <Avatar src={profileImage} name={fullName} size="lg" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium text-secondary-800 truncate">{fullName}</h3>
+            <h3 className="font-medium text-secondary-800 truncate">
+              {fullName}
+            </h3>
             {isVerified && (
               <CheckCircle className="w-4 h-4 text-success flex-shrink-0" />
             )}
           </div>
           <p className="text-sm text-secondary-500">{categoryName}</p>
-          <RatingStars rating={rating.overall} size="sm" reviewCount={reviewCount} />
+          <RatingStars
+            rating={rating.overall}
+            size="sm"
+            reviewCount={reviewCount}
+          />
         </div>
       </Link>
     );
   }
 
-  if (variant === 'featured') {
+  if (variant === "featured") {
     return (
       <div
         className={classNames(
-          'bg-white rounded-xl border border-primary-200 shadow-md overflow-hidden',
+          "bg-white rounded-xl border border-primary-200 shadow-md overflow-hidden",
           className
         )}
       >
@@ -77,10 +82,10 @@ export function ProfessionalCard({
             <Avatar src={profileImage} name={fullName} size="xl" />
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-xl font-semibold text-secondary-800">{fullName}</h3>
-                {isVerified && (
-                  <CheckCircle className="w-5 h-5 text-success" />
-                )}
+                <h3 className="text-xl font-semibold text-secondary-800">
+                  {fullName}
+                </h3>
+                {isVerified && <CheckCircle className="w-5 h-5 text-success" />}
               </div>
               <p className="text-secondary-600 mb-2">{categoryName}</p>
               <RatingStars rating={rating.overall} reviewCount={reviewCount} />
@@ -88,7 +93,7 @@ export function ProfessionalCard({
           </div>
           <div className="mt-4 pt-4 border-t border-secondary-100">
             <div className="flex flex-wrap gap-4 text-sm text-secondary-600 mb-4">
-              {serviceAreas.slice(0, 3).map((area) => (
+              {serviceAreas?.slice(0, 3).map((area) => (
                 <span key={area} className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
                   {area}
@@ -114,7 +119,7 @@ export function ProfessionalCard({
   return (
     <div
       className={classNames(
-        'bg-white rounded-xl border border-secondary-200 p-5 hover:shadow-md transition-shadow',
+        "bg-white rounded-xl border border-secondary-200 p-5 hover:shadow-md transition-shadow",
         className
       )}
     >
@@ -122,26 +127,32 @@ export function ProfessionalCard({
         <Avatar src={profileImage} name={fullName} size="lg" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-secondary-800 truncate">{fullName}</h3>
+            <h3 className="font-semibold text-secondary-800 truncate">
+              {fullName}
+            </h3>
             {isVerified && (
               <CheckCircle className="w-4 h-4 text-success flex-shrink-0" />
             )}
           </div>
           <p className="text-sm text-secondary-500 mb-2">{categoryName}</p>
-          <RatingStars rating={rating.overall} size="sm" reviewCount={reviewCount} />
+          <RatingStars
+            rating={rating?.overall}
+            size="sm"
+            reviewCount={reviewCount}
+          />
         </div>
         {minPrice && (
           <div className="text-left">
             <span className="text-xs text-secondary-500">החל מ-</span>
             <div className="text-lg font-semibold text-primary-600">
-              {minPrice.toLocaleString('he-IL')} ש"ח
+              {minPrice.toLocaleString("he-IL")} ש"ח
             </div>
           </div>
         )}
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {serviceAreas.slice(0, 3).map((area) => (
+        {serviceAreas?.slice(0, 3).map((area) => (
           <span
             key={area}
             className="inline-flex items-center gap-1 px-2 py-1 bg-secondary-100 rounded-full text-xs text-secondary-600"
@@ -150,9 +161,9 @@ export function ProfessionalCard({
             {area}
           </span>
         ))}
-        {serviceAreas.length > 3 && (
+        {serviceAreas?.length > 3 && (
           <span className="px-2 py-1 bg-secondary-100 rounded-full text-xs text-secondary-600">
-            +{serviceAreas.length - 3}
+            +{serviceAreas?.length - 3}
           </span>
         )}
       </div>

@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import Employee from "../models/Employee";
 import Quote from "../models/Quote";
+import { sequelize } from "../config/database";
+import { Op } from "sequelize";
 
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
@@ -243,5 +245,123 @@ export const getRecentRequests = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching recent requests:", error);
     res.status(500).json({ message: "Error fetching recent requests", error });
+  }
+};
+
+// GET /api/employees/search - Search employees with filters
+export const searchEmployees = async (req: Request, res: Response) => {
+  try {
+    const { query, category, city, gender, minRating, shomerShabbat, page = 1, limit = 100 } = req.query;
+    const offset = ((Number(page) || 1) - 1) * (Number(limit) || 100);
+
+    const where: any = { status: 'approved' };
+
+    // Filter by search query (search in firstName, lastName, description)
+    if (query) {
+      const searchTerm = `%${query}%`;
+      where[Op.or] = [
+        sequelize.where(sequelize.fn('LOWER', sequelize.col('firstName')), 'LIKE', searchTerm.toLowerCase()),
+        sequelize.where(sequelize.fn('LOWER', sequelize.col('lastName')), 'LIKE', searchTerm.toLowerCase()),
+        sequelize.where(sequelize.fn('LOWER', sequelize.col('description')), 'LIKE', searchTerm.toLowerCase()),
+      ];
+    }
+
+    // Filter by city/area
+    if (city) {
+      where.area = city;
+    }
+
+    // Filter by gender
+    if (gender) {
+      where.gender = gender;
+    }
+
+    // Filter professionals who do not work on Saturday
+    if (shomerShabbat === 'true' || shomerShabbat === true) {
+      where[Op.and] = [
+        sequelize.where(sequelize.json('workingHours.Saturday'), Op.is, null),
+      ];
+    }
+
+    // Find employees
+    const { count: total, rows: employees } = await Employee.findAndCountAll({
+      where,
+      include: [
+        {
+          association: 'categories',
+          through: { attributes: [] },
+          where: category ? { id: Number(category) } : undefined,
+          required: category ? true : false,
+        },
+        {
+          association: 'reviews',
+          required: false,
+          attributes: ['id', 'priceRate', 'serviceRate', 'performanceRate'],
+        },
+      ],
+      offset,
+      limit: Number(limit) || 100,
+      distinct: true,
+      order: [['createdAt', 'DESC']],
+    });
+
+    // Map to response format with calculated ratings
+    const professionals = employees
+      .map((emp: any) => {
+        const reviews = emp.reviews || [];
+        const reviewCount = reviews.length;
+        const avgPrice = reviewCount > 0 ? reviews.reduce((sum: number, r: any) => sum + (r.priceRate || 0), 0) / reviewCount : 0;
+        const avgService = reviewCount > 0 ? reviews.reduce((sum: number, r: any) => sum + (r.serviceRate || 0), 0) / reviewCount : 0;
+        const avgPerformance = reviewCount > 0 ? reviews.reduce((sum: number, r: any) => sum + (r.performanceRate || 0), 0) / reviewCount : 0;
+        const overallRating = reviewCount > 0 ? (avgPrice + avgService + avgPerformance) / 3 : 0;
+
+        return {
+          id: String(emp.id),
+          email: emp.email,
+          firstName: emp.firstName,
+          lastName: emp.lastName,
+          phone: emp.phone,
+          city: emp.area,
+          gender: emp.gender,
+          role: 'professional',
+          status: emp.status,
+          categoryId: emp.categories?.[0]?.id?.toString() || '',
+          categoryName: emp.categories?.[0]?.name || '',
+          description: emp.description,
+          yearsOfExperience: emp.yearsOfExperience,
+          serviceAreas: [emp.area].filter(Boolean),
+          workingHours: emp.workingHours,
+          services: emp.services || [],
+          certificates: emp.certificates || [],
+          rating: {
+            overall: Number(overallRating.toFixed(1)),
+            reliability: Number(avgPerformance.toFixed(1)),
+            service: Number(avgService.toFixed(1)),
+            availability: 4.5,
+            price: Number(avgPrice.toFixed(1)),
+            professionalism: Number(avgPerformance.toFixed(1)),
+          },
+          reviewCount,
+          isVerified: emp.status === 'approved',
+          approvedAt: emp.approvedAt,
+          createdAt: emp.createdAt,
+          updatedAt: emp.updatedAt,
+        };
+      })
+      .filter(prof => !minRating || prof.rating.overall >= Number(minRating));
+
+    const pageSize = Number(limit) || 100;
+    const totalPages = Math.ceil(total / pageSize);
+
+    res.status(200).json({
+      professionals,
+      total,
+      page: Number(page) || 1,
+      limit: pageSize,
+      totalPages,
+    });
+  } catch (error) {
+    console.error('Error searching employees:', error);
+    res.status(500).json({ message: 'Error searching employees', error });
   }
 };

@@ -1,0 +1,398 @@
+{
+  "categories": [
+    {
+      "id": "1",
+      "name": "חשמלאי",
+      "description": "שירותי חשמל, תיקון מתקנים חשמליים, התקנות",
+      "image": "⚡",
+      "fatherCategory": "חשמל ואלקטרוניקה"
+    },
+    {
+      "id": "2",
+      "name": "אולם דרבן",
+      "description": "שירותי מלאכה עבור רהיטים וציפוי",
+      "image": "🪛",
+      "fatherCategory": "מלאכה ועיצוב"
+    },
+    {
+      "id": "3",
+      "name": "קוסמטיקאית",
+      "description": "שירותי קוסמטיקה טבעית וטיפול בעור",
+      "image": "💅",
+      "fatherCategory": "קוסמטיקה וטיפוח"
+    },
+    {
+      "id": "4",
+      "name": "נקי",
+      "description": "שירותי ניקיון עמוק ותחזוקה",
+      "image": "🧹",
+      "fatherCategory": "שירותים כלליים"
+    },
+    {
+      "id": "5",
+      "name": "מאפיה ועוגיות",
+      "description": "הכנת עוגות יום הולדת ועוגיות מעוצבות",
+      "image": "🎂",
+      "fatherCategory": "קולינריה"
+    },
+    {
+      "id": "6",
+      "name": "דוג וקט",
+      "description": "שירותי הסעת יומית לכלבים וחתולים",
+      "image": "🐕",
+      "fatherCategory": "טיפול בחיות מחמד"
+    }
+  ],
+  "professionals": [
+    {
+      "id": "1",
+      "email": "moshe.kohn@email.com",
+      "firstName": "משה",
+      "lastName": "כהן",
+      "phone": "0501234567",
+      "city": "מרכז",
+      "gender": "זכר",
+      "role": "professional",
+      "status": "approved",
+      "categoryId": "1",
+      "categoryName": "חשמלאי",
+      "description": "חשמלאי מקצועי עם 15 שנות ניסיון בעבודות ביתיות",
+      "yearsOfExperience": 15,
+      "serviceAreas": ["מרכז"],
+      "workingHours": {
+        "monday": { "day": "monday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "tuesday": { "day": "tuesday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "wednesday": { "day": "wednesday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "thursday": { "day": "thursday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "friday": { "day": "friday", "isWorking": true, "startTime": "08:00", "endTime": "16:00" },
+        "saturday": { "day": "saturday", "isWorking": false },
+        "sunday": { "day": "sunday", "isWorking": true, "startTime": "09:00", "endTime": "18:00" }
+      },
+      "services": [
+        { "id": "1", "name": "חיווט חדש", "minPrice": 200, "maxPrice": 500, "description": "התקנת חיווט חשמלי חדש" },
+        { "id": "2", "name": "תיקון ממסרים", "minPrice": 100, "maxPrice": 300, "description": "תיקון וחלפת ממסרים" },
+        { "id": "3", "name": "התקנת נורות LED", "minPrice": 50, "maxPrice": 150, "description": "התקנת תאורת LED חסכונית" },
+        { "id": "4", "name": "בדיקת בטיחות", "minPrice": 150, "maxPrice": 400, "description": "בדיקת מערכת חשמל לבטיחות" }
+      ],
+      "certificates": [
+        { "id": "1", "name": "רישיון חשמלאי", "fileUrl": "/certificates/electrician-license.pdf", "fileType": "pdf", "uploadedAt": "2024-01-15T00:00:00Z" },
+        { "id": "2", "name": "הכשרה בטיחות חשמל", "fileUrl": "/certificates/safety-training.pdf", "fileType": "pdf", "uploadedAt": "2024-01-15T00:00:00Z" }
+      ],
+      "rating": {
+        "overall": 4.3,
+        "reliability": 4.3,
+        "service": 4.7,
+        "availability": 4.7,
+        "price": 4.0,
+        "professionalism": 4.3
+      },
+      "reviewCount": 1,
+      "isVerified": true,
+      "approvedAt": "2024-01-15T00:00:00Z",
+      "createdAt": "2024-01-10T00:00:00Z",
+      "updatedAt": "2024-01-15T00:00:00Z"
+    },
+    {
+      "id": "2",
+      "email": "lior.ravid@email.com",
+      "firstName": "ליאור",
+      "lastName": "רביד",
+      "phone": "0502468135",
+      "city": "מרכז",
+      "gender": "זכר",
+      "role": "professional",
+      "status": "approved",
+      "categoryId": "2",
+      "categoryName": "אולם דרבן",
+      "description": "נגר ומעצב רהיטים מומחה, עובד עם חומרים איכותיים",
+      "yearsOfExperience": 10,
+      "serviceAreas": ["מרכז"],
+      "workingHours": {
+        "monday": { "day": "monday", "isWorking": true, "startTime": "07:00", "endTime": "17:00" },
+        "tuesday": { "day": "tuesday", "isWorking": true, "startTime": "07:00", "endTime": "17:00" },
+        "wednesday": { "day": "wednesday", "isWorking": true, "startTime": "07:00", "endTime": "17:00" },
+        "thursday": { "day": "thursday", "isWorking": true, "startTime": "07:00", "endTime": "17:00" },
+        "friday": { "day": "friday", "isWorking": true, "startTime": "07:00", "endTime": "14:00" },
+        "saturday": { "day": "saturday", "isWorking": false },
+        "sunday": { "day": "sunday", "isWorking": true, "startTime": "08:00", "endTime": "17:00" }
+      },
+      "services": [
+        { "id": "5", "name": "ציפוי רהיטים", "minPrice": 300, "maxPrice": 800, "description": "ציפוי מקצועי של רהיטים" },
+        { "id": "6", "name": "תיקון עץ", "minPrice": 150, "maxPrice": 400, "description": "תיקון נזקי עץ ורהיטים" },
+        { "id": "7", "name": "עיצוב מחדש", "minPrice": 500, "maxPrice": 1500, "description": "עיצוב מחדש של רהיטים" },
+        { "id": "8", "name": "ייצור ספסלים", "minPrice": 800, "maxPrice": 2000, "description": "ייצור ספסלים מותאמים אישית" }
+      ],
+      "certificates": [
+        { "id": "3", "name": "הכשרה בעבודת עץ", "fileUrl": "/certificates/woodworking.pdf", "fileType": "pdf", "uploadedAt": "2024-02-20T00:00:00Z" },
+        { "id": "4", "name": "ציפוי מקצועי", "fileUrl": "/certificates/finishing.pdf", "fileType": "pdf", "uploadedAt": "2024-02-20T00:00:00Z" }
+      ],
+      "rating": {
+        "overall": 4.7,
+        "reliability": 4.7,
+        "service": 4.7,
+        "availability": 4.7,
+        "price": 4.7,
+        "professionalism": 4.7
+      },
+      "reviewCount": 1,
+      "isVerified": true,
+      "approvedAt": "2024-02-20T00:00:00Z",
+      "createdAt": "2024-02-15T00:00:00Z",
+      "updatedAt": "2024-02-20T00:00:00Z"
+    },
+    {
+      "id": "3",
+      "email": "avigail.amram@email.com",
+      "firstName": "אביגיל",
+      "lastName": "עמרם",
+      "phone": "0503369741",
+      "city": "צפון",
+      "gender": "נקבה",
+      "role": "professional",
+      "status": "approved",
+      "categoryId": "3",
+      "categoryName": "קוסמטיקאית",
+      "description": "קוסמטיקאית בעלת דיפלומה בקוסמטיקה טבעית",
+      "yearsOfExperience": 8,
+      "serviceAreas": ["צפון"],
+      "workingHours": {
+        "monday": { "day": "monday", "isWorking": true, "startTime": "10:00", "endTime": "19:00" },
+        "tuesday": { "day": "tuesday", "isWorking": true, "startTime": "10:00", "endTime": "19:00" },
+        "wednesday": { "day": "wednesday", "isWorking": true, "startTime": "10:00", "endTime": "19:00" },
+        "thursday": { "day": "thursday", "isWorking": true, "startTime": "10:00", "endTime": "20:00" },
+        "friday": { "day": "friday", "isWorking": true, "startTime": "10:00", "endTime": "15:00" },
+        "saturday": { "day": "saturday", "isWorking": true, "startTime": "11:00", "endTime": "18:00" },
+        "sunday": { "day": "sunday", "isWorking": true, "startTime": "10:00", "endTime": "19:00" }
+      },
+      "services": [
+        { "id": "9", "name": "טיפול בעור", "minPrice": 150, "maxPrice": 300, "description": "טיפול עמוק בעור הפנים" },
+        { "id": "10", "name": "מניקור", "minPrice": 80, "maxPrice": 150, "description": "מניקור ופדיקור מקצועי" },
+        { "id": "11", "name": "פדיקור", "minPrice": 100, "maxPrice": 180, "description": "טיפול מקצועי בכף הרגל" },
+        { "id": "12", "name": "ספא ביתי", "minPrice": 200, "maxPrice": 400, "description": "חווית ספא מלאה בבית" }
+      ],
+      "certificates": [
+        { "id": "5", "name": "דיפלומה בקוסמטיקה בטבעית", "fileUrl": "/certificates/cosmetology.pdf", "fileType": "pdf", "uploadedAt": "2024-01-10T00:00:00Z" },
+        { "id": "6", "name": "סכנת עור מקצועית", "fileUrl": "/certificates/dermatology.pdf", "fileType": "pdf", "uploadedAt": "2024-01-10T00:00:00Z" }
+      ],
+      "rating": {
+        "overall": 4.0,
+        "reliability": 4.0,
+        "service": 4.0,
+        "availability": 4.0,
+        "price": 4.0,
+        "professionalism": 4.0
+      },
+      "reviewCount": 1,
+      "isVerified": true,
+      "approvedAt": "2024-01-10T00:00:00Z",
+      "createdAt": "2024-01-05T00:00:00Z",
+      "updatedAt": "2024-01-10T00:00:00Z"
+    },
+    {
+      "id": "4",
+      "email": "rachel.lee@email.com",
+      "firstName": "רחל",
+      "lastName": "לי",
+      "phone": "0504567890",
+      "city": "דרום",
+      "gender": "נקבה",
+      "role": "professional",
+      "status": "approved",
+      "categoryId": "4",
+      "categoryName": "נקי",
+      "description": "מנקה מקצועית עם 12 שנות ניסיון בניקיון עמוק",
+      "yearsOfExperience": 12,
+      "serviceAreas": ["דרום"],
+      "workingHours": {
+        "monday": { "day": "monday", "isWorking": true, "startTime": "08:00", "endTime": "17:00" },
+        "tuesday": { "day": "tuesday", "isWorking": true, "startTime": "08:00", "endTime": "17:00" },
+        "wednesday": { "day": "wednesday", "isWorking": true, "startTime": "08:00", "endTime": "17:00" },
+        "thursday": { "day": "thursday", "isWorking": true, "startTime": "08:00", "endTime": "17:00" },
+        "friday": { "day": "friday", "isWorking": true, "startTime": "08:00", "endTime": "14:00" },
+        "saturday": { "day": "saturday", "isWorking": false },
+        "sunday": { "day": "sunday", "isWorking": false }
+      },
+      "services": [
+        { "id": "13", "name": "ניקיון עמוק", "minPrice": 200, "maxPrice": 500, "description": "ניקיון יסודי ומרוק" },
+        { "id": "14", "name": "ניקיון חלונות", "minPrice": 100, "maxPrice": 250, "description": "ניקוי חלונות מקצועי" },
+        { "id": "15", "name": "ניקיון שטיחים", "minPrice": 150, "maxPrice": 350, "description": "ניקוי שטיחים ושואבי אבק" },
+        { "id": "16", "name": "ניקיון לאחר בנייה", "minPrice": 300, "maxPrice": 800, "description": "ניקיון לאחר עבודות בנייה" }
+      ],
+      "certificates": [
+        { "id": "7", "name": "הכשרה בתחזוקה", "fileUrl": "/certificates/cleaning.pdf", "fileType": "pdf", "uploadedAt": "2024-03-05T00:00:00Z" },
+        { "id": "8", "name": "בטיחות וטיגיינה", "fileUrl": "/certificates/safety.pdf", "fileType": "pdf", "uploadedAt": "2024-03-05T00:00:00Z" }
+      ],
+      "rating": {
+        "overall": 0,
+        "reliability": 0,
+        "service": 0,
+        "availability": 0,
+        "price": 0,
+        "professionalism": 0
+      },
+      "reviewCount": 0,
+      "isVerified": true,
+      "approvedAt": "2024-03-05T00:00:00Z",
+      "createdAt": "2024-03-01T00:00:00Z",
+      "updatedAt": "2024-03-05T00:00:00Z"
+    },
+    {
+      "id": "5",
+      "email": "yael.shnaer@email.com",
+      "firstName": "יעל",
+      "lastName": "שנער",
+      "phone": "0505689101",
+      "city": "מרכז",
+      "gender": "נקבה",
+      "role": "professional",
+      "status": "approved",
+      "categoryId": "5",
+      "categoryName": "מאפיה ועוגיות",
+      "description": "בשפנית קונדיטור מעוצבת עם חוויה בעוגות מכובדות",
+      "yearsOfExperience": 6,
+      "serviceAreas": ["מרכז"],
+      "workingHours": {
+        "monday": { "day": "monday", "isWorking": true, "startTime": "09:00", "endTime": "17:00" },
+        "tuesday": { "day": "tuesday", "isWorking": true, "startTime": "09:00", "endTime": "17:00" },
+        "wednesday": { "day": "wednesday", "isWorking": true, "startTime": "09:00", "endTime": "17:00" },
+        "thursday": { "day": "thursday", "isWorking": true, "startTime": "09:00", "endTime": "17:00" },
+        "friday": { "day": "friday", "isWorking": true, "startTime": "09:00", "endTime": "15:00" },
+        "saturday": { "day": "saturday", "isWorking": true, "startTime": "09:00", "endTime": "13:00" },
+        "sunday": { "day": "sunday", "isWorking": false }
+      },
+      "services": [
+        { "id": "17", "name": "עוגות יום הולדת", "minPrice": 150, "maxPrice": 400, "description": "עוגות יום הולדת מעוצבות" },
+        { "id": "18", "name": "עוגות קישוט", "minPrice": 200, "maxPrice": 500, "description": "עוגות לקישוט ואירועים" },
+        { "id": "19", "name": "קאפקייקס מעוצבות", "minPrice": 80, "maxPrice": 200, "description": "קאפקייקס עם עיצוב מיוחד" },
+        { "id": "20", "name": "עוגיות", "minPrice": 50, "maxPrice": 120, "description": "עוגיות ביתיות טעימות" }
+      ],
+      "certificates": [
+        { "id": "9", "name": "תעודה בקונדיטוריה מקצועית", "fileUrl": "/certificates/pastry.pdf", "fileType": "pdf", "uploadedAt": "2024-02-28T00:00:00Z" },
+        { "id": "10", "name": "הצהרת בטיחות מזון", "fileUrl": "/certificates/food-safety.pdf", "fileType": "pdf", "uploadedAt": "2024-02-28T00:00:00Z" }
+      ],
+      "rating": {
+        "overall": 0,
+        "reliability": 0,
+        "service": 0,
+        "availability": 0,
+        "price": 0,
+        "professionalism": 0
+      },
+      "reviewCount": 0,
+      "isVerified": true,
+      "approvedAt": "2024-02-28T00:00:00Z",
+      "createdAt": "2024-02-25T00:00:00Z",
+      "updatedAt": "2024-02-28T00:00:00Z"
+    },
+    {
+      "id": "6",
+      "email": "alex.rosenberg@email.com",
+      "firstName": "אלכס",
+      "lastName": "רוזנברג",
+      "phone": "0506789012",
+      "city": "מרכז",
+      "gender": "זכר",
+      "role": "professional",
+      "status": "approved",
+      "categoryId": "6",
+      "categoryName": "דוג וקט",
+      "description": "דוג מקצועי עם דוגביל מוסמך וביטוח מלא",
+      "yearsOfExperience": 4,
+      "serviceAreas": ["מרכז"],
+      "workingHours": {
+        "monday": { "day": "monday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "tuesday": { "day": "tuesday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "wednesday": { "day": "wednesday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "thursday": { "day": "thursday", "isWorking": true, "startTime": "08:00", "endTime": "18:00" },
+        "friday": { "day": "friday", "isWorking": true, "startTime": "08:00", "endTime": "16:00" },
+        "saturday": { "day": "saturday", "isWorking": true, "startTime": "09:00", "endTime": "17:00" },
+        "sunday": { "day": "sunday", "isWorking": true, "startTime": "09:00", "endTime": "17:00" }
+      },
+      "services": [
+        { "id": "21", "name": "הסעה יומית", "minPrice": 80, "maxPrice": 150, "description": "הסעה יומית של חיות מחמד" },
+        { "id": "22", "name": "גדילה קוגניטיבית", "minPrice": 100, "maxPrice": 200, "description": "פעילויות לגדילה קוגניטיבית" },
+        { "id": "23", "name": "הצעות גדולה", "minPrice": 60, "maxPrice": 120, "description": "הצעות גדולה וטיפוח" },
+        { "id": "24", "name": "טיפול וטיפוח", "minPrice": 90, "maxPrice": 180, "description": "טיפול מלא וטיפוח לחיות" }
+      ],
+      "certificates": [
+        { "id": "11", "name": "דוגביל מוסמך", "fileUrl": "/certificates/dog-training.pdf", "fileType": "pdf", "uploadedAt": "2024-03-15T00:00:00Z" },
+        { "id": "12", "name": "ביודיפנסר בעלי חיים", "fileUrl": "/certificates/animal-behavior.pdf", "fileType": "pdf", "uploadedAt": "2024-03-15T00:00:00Z" }
+      ],
+      "rating": {
+        "overall": 0,
+        "reliability": 0,
+        "service": 0,
+        "availability": 0,
+        "price": 0,
+        "professionalism": 0
+      },
+      "reviewCount": 0,
+      "isVerified": true,
+      "approvedAt": "2024-03-15T00:00:00Z",
+      "createdAt": "2024-03-10T00:00:00Z",
+      "updatedAt": "2024-03-15T00:00:00Z"
+    }
+  ],
+  "customers": [
+    {
+      "id": "1",
+      "firstName": "יוני",
+      "lastName": "כהן",
+      "email": "yoni.cohen@email.com",
+      "phone": "",
+      "city": "תל אביב",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "2",
+      "firstName": "מיכל",
+      "lastName": "ליברמן",
+      "email": "michal.liberman@email.com",
+      "phone": "",
+      "city": "ירושלים",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2024-01-02T00:00:00Z",
+      "updatedAt": "2024-01-02T00:00:00Z"
+    },
+    {
+      "id": "3",
+      "firstName": "דוד",
+      "lastName": "גולן",
+      "email": "david.golan@email.com",
+      "phone": "",
+      "city": "חיפה",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2024-01-03T00:00:00Z",
+      "updatedAt": "2024-01-03T00:00:00Z"
+    },
+    {
+      "id": "4",
+      "firstName": "שרה",
+      "lastName": "מילר",
+      "email": "sarah.miller@email.com",
+      "phone": "",
+      "city": "בית שמש",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2024-01-04T00:00:00Z",
+      "updatedAt": "2024-01-04T00:00:00Z"
+    },
+    {
+      "id": "5",
+      "firstName": "אור",
+      "lastName": "בנימיני",
+      "email": "or.binyamini@email.com",
+      "phone": "",
+      "city": "קרית מוצקין",
+      "role": "customer",
+      "status": "active",
+      "createdAt": "2024-01-05T00:00:00Z",
+      "updatedAt": "2024-01-05T00:00:00Z"
+    }
+  ]
+}

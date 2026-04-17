@@ -10,6 +10,7 @@ export type { AuthResponse } from '../types/user.types';
 const ENDPOINTS = {
   REGISTER: '/auth/register',
   LOGIN: '/auth/login',
+  ADMIN_LOGIN: '/auth/admin/login',
   PROFILE: '/auth/profile',
 };
 
@@ -28,7 +29,8 @@ export const authApi = {
   }): Promise<AuthResponse> {
     // Convert UI format to server format
     const serverData: ServerRegisterRequest = {
-      name: `${data.firstName} ${data.lastName}`.trim(),
+      firstName: data.firstName,
+      lastName: data.lastName,
       email: data.email,
       password: data.password,
       address: data.city,
@@ -50,6 +52,20 @@ export const authApi = {
 
     const response = await apiClient.post<ServerAuthResponse>(ENDPOINTS.LOGIN, serverData);
     return adaptServerAuthToUser(response.data, 'customer');
+  },
+
+  /**
+   * Admin login with email and password
+   * POST /api/auth/admin/login
+   */
+  async adminLogin(credentials: { email: string; password: string }): Promise<AuthResponse> {
+    const serverData: ServerLoginRequest = {
+      email: credentials.email,
+      password: credentials.password,
+    };
+
+    const response = await apiClient.post<ServerAuthResponse>(ENDPOINTS.ADMIN_LOGIN, serverData);
+    return adaptServerAuthToUser(response.data, 'admin');
   },
 
   /**

@@ -12,6 +12,7 @@ interface AuthState {
   _hasHydrated: boolean;
 
   login: (credentials: LoginCredentials) => Promise<void>;
+  adminLogin: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -47,6 +48,24 @@ export const useAuthStore = create<AuthState>()(
           });
         } catch (error) {
           const message = error instanceof Error ? error.message : 'שגיאה בהתחברות';
+          set({ error: message, isLoading: false });
+          throw error;
+        }
+      },
+
+      adminLogin: async (credentials: LoginCredentials) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authService.adminLogin(credentials);
+          authService.setTokens(response.token, response.refreshToken);
+          set({
+            user: response.user,
+            token: response.token,
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'שגיאה בהתחברות כמנהל';
           set({ error: message, isLoading: false });
           throw error;
         }

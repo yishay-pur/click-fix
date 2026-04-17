@@ -8,23 +8,48 @@ import { Op } from "sequelize";
  */
 
 export const findAll = async (): Promise<any[]> => {
-  return Review.findAll({ include: ["reviewer", "employee"] });
+  try {
+    return Review.findAll({ include: ["reviewer", "employee"] });
+  } catch (error) {
+    console.error("Error in reviewDAL.findAll:", error);
+    throw error;
+  }
 };
 
 export const findById = async (id: number): Promise<any | null> => {
-  return Review.findByPk(id, { include: ["reviewer", "employee"] });
+  try {
+    return Review.findByPk(id, { include: ["reviewer", "employee"] });
+  } catch (error) {
+    console.error("Error in reviewDAL.findById:", error);
+    throw error;
+  }
 };
 
 export const findByEmployee = async (employeeId: number): Promise<any[]> => {
-  return Review.findAll({ where: { employeeId } });
+  try {
+    return Review.findAll({ where: { employeeId } });
+  } catch (error) {
+    console.error("Error in reviewDAL.findByEmployee:", error);
+    throw error;
+  }
 };
 
 export const findByUser = async (userId: number): Promise<any[]> => {
-  return Review.findAll({ where: { reviewerId: userId } });
+  try {
+    return Review.findAll({ where: { reviewerId: userId } });
+  } catch (error) {
+    console.error("Error in reviewDAL.findByUser:", error);
+    throw error;
+  }
 };
 
 export const findByMinRating = async (minRating: number): Promise<any[]> => {
-  return Review.findAll({ where: { rate: { [Op.gte]: minRating } } as any });
+  try {
+    return Review.findAll({ where: { rate: { [Op.gte]: minRating } } as any });
+  } catch (error) {
+    console.error("Error in reviewDAL.findByMinRating:", error);
+    throw error;
+  }
 };
 
 export const create = async (
@@ -39,26 +64,31 @@ export const create = async (
   },
   date?: string
 ): Promise<any | null> => {
-  const reviewerId = review.reviewerId;
-  const employeeId = review.employeeId;
-  if (!reviewerId || !employeeId) return null;
+  try {
+    const reviewerId = review.reviewerId;
+    const employeeId = review.employeeId;
+    if (!reviewerId || !employeeId) return null;
 
-  const user = await User.findByPk(reviewerId);
-  const employee = await Employee.findByPk(employeeId);
-  if (!user || !employee) return null;
+    const user = await User.findByPk(reviewerId);
+    const employee = await Employee.findByPk(employeeId);
+    if (!user || !employee) return null;
 
-  const created = await Review.create({
-    reviewerId,
-    employeeId,
-    rate: review.rate,
-    priceRate: review.priceRate,
-    performanceRate: review.performanceRate,
-    serviceRate: review.serviceRate,
-    comment: review.comment,
-    createdAt: date,
-  } as any);
+    const created = await Review.create({
+      reviewerId,
+      employeeId,
+      rate: review.rate,
+      priceRate: review.priceRate,
+      performanceRate: review.performanceRate,
+      serviceRate: review.serviceRate,
+      comment: review.comment,
+      createdAt: date,
+    } as any);
 
-  return created;
+    return created;
+  } catch (error) {
+    console.error("Error in reviewDAL.create:", error);
+    throw error;
+  }
 };
 
 export const update = async (
@@ -71,13 +101,23 @@ export const update = async (
     comment: string;
   }>
 ): Promise<any | null> => {
-  const review = await Review.findByPk(id);
-  if (!review) return null;
-  await review.update(updates as any);
-  return review;
+  try {
+    const review = await Review.findByPk(id);
+    if (!review) return null;
+    await review.update(updates as any);
+    return review;
+  } catch (error) {
+    console.error("Error in reviewDAL.update:", error);
+    throw error;
+  }
 };
 
 export const delete_ = async (id: number): Promise<boolean> => {
-  const deleted = await Review.destroy({ where: { id } });
-  return deleted > 0;
+  try {
+    const deleted = await Review.destroy({ where: { id } });
+    return deleted > 0;
+  } catch (error) {
+    console.error("Error in reviewDAL.delete_:", error);
+    throw error;
+  }
 };

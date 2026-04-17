@@ -2,15 +2,18 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, X, SlidersHorizontal } from 'lucide-react';
 import { Button, Select, Card, ProfessionalCard, Loader } from '../../components/common';
-import { ISRAELI_CITIES, GENDER_OPTIONS, CATEGORIES } from '../../utils/constants';
 import { professionalService } from '../../services/professional.service';
+import { categoryService } from '../../services/category.service';
 import type { Professional } from '../../types/professional.types';
+import type { Category } from '../../types/category.types';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
+  const [allProfessionals, setAllProfessionals] = useState<Professional[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Filter states
   const [query, setQuery] = useState(searchParams.get('query') || '');
@@ -18,11 +21,22 @@ export default function SearchPage() {
   const [city, setCity] = useState(searchParams.get('city') || '');
   const [gender, setGender] = useState(searchParams.get('gender') || '');
   const [minRating, setMinRating] = useState(searchParams.get('minRating') || '');
+  const [shomerShabbat, setShomerShabbat] = useState(searchParams.get('shomerShabbat') === 'true');
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'relevance');
 
-  const categories = CATEGORIES.map((c) => ({ value: c.id, label: c.name }));
-  const cityOptions = ISRAELI_CITIES.map((c) => ({ value: c, label: c }));
-  const genderOptions = GENDER_OPTIONS.map((g) => ({ value: g.value, label: g.label }));
+  const cityOptions = Array.from(
+    new Set(allProfessionals.map((p) => p.city).filter(Boolean))
+  )
+    .sort()
+    .map((city) => ({ value: city, label: city }));
+
+  const genderOptions = Array.from(
+    new Set(allProfessionals.map((p) => p.gender).filter(Boolean))
+  )
+    .sort()
+    .map((gender) => ({ value: gender, label: gender }));
+
+  const categoryOptions = categories.map((c) => ({ value: c.id.toString(), label: c.name }));
   const ratingOptions = [
     { value: '4', label: '4 כוכבים ומעלה' },
     { value: '3', label: '3 כוכבים ומעלה' },
@@ -30,20 +44,44 @@ export default function SearchPage() {
   ];
 
   useEffect(() => {
-    const fetchProfessionals = async () => {
+    const loadFilterOptions = async () => {
+      try {
+        const fullResult = await professionalService.search({});
+        setAllProfessionals(fullResult.professionals);
+      } catch (error) {
+        console.error('Failed to load professionals for filter options:', error);
+      }
+    };
+
+    loadFilterOptions();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
       setIsLoading(true);
       try {
-        const result = await professionalService.search({});
-        setProfessionals(result.professionals);
+        const [professionalsResult, categoriesResult] = await Promise.all([
+          professionalService.search({
+            query: query || undefined,
+            category: category || undefined,
+            city: city || undefined,
+            gender: gender || undefined,
+            minRating: minRating ? parseInt(minRating) : undefined,
+            shomerShabbat,
+          }),
+          categoryService.getAll()
+        ]);
+        setProfessionals(professionalsResult.professionals);
+        setCategories(categoriesResult);
       } catch (error) {
-        console.error('Failed to fetch professionals:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProfessionals();
-  }, []);
+    fetchData();
+  }, [query, category, city, gender, minRating, shomerShabbat]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -52,8 +90,10 @@ export default function SearchPage() {
     if (city) params.set('city', city);
     if (gender) params.set('gender', gender);
     if (minRating) params.set('minRating', minRating);
+    if (shomerShabbat) params.set('shomerShabbat', 'true');
     if (sortBy && sortBy !== 'relevance') params.set('sortBy', sortBy);
     setSearchParams(params);
+    // The useEffect will automatically re-fetch data when filters change
   };
 
   const clearFilters = () => {
@@ -62,6 +102,7 @@ export default function SearchPage() {
     setCity('');
     setGender('');
     setMinRating('');
+    setShomerShabbat(false);
     setSortBy('relevance');
     setSearchParams({});
   };
@@ -80,42 +121,22 @@ export default function SearchPage() {
       case 'minRating':
         setMinRating('');
         break;
+      case 'shomerShabbat':
+        setShomerShabbat(false);
+        break;
     }
     handleSearch();
   };
 
-  const hasActiveFilters = category || city || gender || minRating;
+  const hasActiveFilters = category || city || gender || minRating || shomerShabbat;
 
-  // Filter professionals based on current filters (client-side filtering on fetched data)
-  const filteredProfessionals = professionals.filter((p: any) => {
-    if (category) {
-      const cats = p.categories || [];
-      const matchesCat = cats.some((c: any) => String(c.id) === category);
-      if (!matchesCat) return false;
-    }
-    if (city && p.area !== city) return false;
-    if (gender && p.gender !== gender) return false;
-    if (query) {
-      const searchLower = query.toLowerCase();
-      const matches =
-        (p.firstName || '').toLowerCase().includes(searchLower) ||
-        (p.lastName || '').toLowerCase().includes(searchLower) ||
-        (p.description || '').toLowerCase().includes(searchLower);
-      if (!matches) return false;
-    }
-    return true;
-  });
-
-  // Sort professionals
-  const sortedProfessionals = [...filteredProfessionals].sort((a: any, b: any) => {
+  // Sort professionals (sorting is done client-side since it's UI preference)
+  const sortedProfessionals = [...professionals].sort((a: Professional, b: Professional) => {
     switch (sortBy) {
-      case 'rating': {
-        const aRating = a.reviews?.length ? a.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / a.reviews.length : 0;
-        const bRating = b.reviews?.length ? b.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / b.reviews.length : 0;
-        return bRating - aRating;
-      }
+      case 'rating':
+        return b.rating.overall - a.rating.overall;
       case 'reviews':
-        return (b.reviews?.length || 0) - (a.reviews?.length || 0);
+        return b.reviewCount - a.reviewCount;
       default:
         return 0;
     }
@@ -195,7 +216,7 @@ export default function SearchPage() {
               <div className="space-y-4">
                 <Select
                   label="קטגוריה"
-                  options={categories}
+                  options={categoryOptions}
                   placeholder="בחר קטגוריה"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -224,6 +245,16 @@ export default function SearchPage() {
                   value={minRating}
                   onChange={(e) => setMinRating(e.target.value)}
                 />
+
+                <label className="flex items-center gap-3 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={shomerShabbat}
+                    onChange={(e) => setShomerShabbat(e.target.checked)}
+                    className="h-4 w-4 rounded border-secondary-300 text-primary-600 focus:ring-primary-500"
+                  />
+                  שומר שבת (אין שעות עבודה בשבת)
+                </label>
 
                 <Button fullWidth onClick={handleSearch}>
                   החל סינון
@@ -260,7 +291,7 @@ export default function SearchPage() {
               <div className="flex flex-wrap gap-2 mb-4">
                 {category && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
-                    {categories.find((c) => c.value === category)?.label}
+                    {categoryOptions.find((c) => c.value === category)?.label}
                     <button onClick={() => removeFilter('category')}>
                       <X className="w-4 h-4" />
                     </button>
