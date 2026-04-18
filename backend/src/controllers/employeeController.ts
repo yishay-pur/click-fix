@@ -277,9 +277,9 @@ export const searchEmployees = async (req: Request, res: Response) => {
     }
 
     // Filter professionals who do not work on Saturday
-    if (shomerShabbat === 'true' || shomerShabbat === true) {
+    if (shomerShabbat === 'true') {
       where[Op.and] = [
-        sequelize.where(sequelize.json('workingHours.Saturday'), Op.is, null),
+        { workingHours: { Saturday: null } },
       ];
     }
 

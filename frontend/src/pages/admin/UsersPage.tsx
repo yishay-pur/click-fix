@@ -9,23 +9,19 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { Card, Button, Input, Avatar, Modal, Select, PageLoader } from '../../components/common';
+import { Card, Button, Input, Avatar, Select, PageLoader } from '../../components/common';
 import { formatDate, classNames } from '../../utils/helpers';
 import { adminService, AdminUser } from '../../services/admin.service';
 import { CUSTOMER_STATUS_LABELS, CUSTOMER_STATUS_COLORS } from '../../utils/constants';
 import { toast } from 'react-toastify';
 
-type CustomerStatus = 'active' | 'suspended' | 'pending';
+// type CustomerStatus = 'active' | 'suspended' | 'pending';
 
 export default function UsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  const [showSuspendModal, setShowSuspendModal] = useState(false);
-  const [suspendReason, setSuspendReason] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -61,51 +57,6 @@ export default function UsersPage() {
   );
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-
-  const handleSuspend = async () => {
-    if (!selectedUser) return;
-    setIsProcessing(true);
-    try {
-      // Suspend user - visual only for now
-      setUsers(
-        users.map((u) =>
-          u.id === selectedUser.id ? { ...u, status: 'suspended' as CustomerStatus } : u
-        )
-      );
-      toast.success(`${selectedUser.firstName} ${selectedUser.lastName} הושעה`);
-      setShowSuspendModal(false);
-      setSuspendReason('');
-      setSelectedUser(null);
-    } catch (error) {
-      console.error('Failed to suspend:', error);
-      toast.error('שגיאה בהשעיית המשתמש');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleActivate = async (user: AdminUser) => {
-    setIsProcessing(true);
-    try {
-      // Activate user - visual only for now
-      setUsers(
-        users.map((u) =>
-          u.id === user.id ? { ...u, status: 'active' as CustomerStatus } : u
-        )
-      );
-      toast.success(`${user.firstName} ${user.lastName} הופעל`);
-    } catch (error) {
-      console.error('Failed to activate:', error);
-      toast.error('שגיאה בהפעלת המשתמש');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const openSuspendModal = (user: AdminUser) => {
-    setSelectedUser(user);
-    setShowSuspendModal(true);
-  };
 
   if (isLoading) {
     return <PageLoader />;
@@ -215,25 +166,14 @@ export default function UsersPage() {
                     {user.lastLogin ? formatDate(user.lastLogin) : 'מעולם לא התחבר'}
                   </td>
                   <td className="px-4 py-3">
-                    {user.status === 'active' ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openSuspendModal(user)}
-                        disabled={isProcessing}
-                      >
-                        <Ban className="w-4 h-4" />
-                        השעה
-                      </Button>
-                    ) : user.status === 'suspended' ? (
-                      <Button
-                        size="sm"
-                        onClick={() => handleActivate(user)}
-                        disabled={isProcessing}
-                      >
-                        הפעל
-                      </Button>
-                    ) : null}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled
+                    >
+                      <Ban className="w-4 h-4" />
+                      פעולה בקרוב
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -271,60 +211,15 @@ export default function UsersPage() {
         )}
       </Card>
 
-      {/* Suspend Modal */}
-      <Modal
-        isOpen={showSuspendModal}
-        onClose={() => {
-          setShowSuspendModal(false);
-          setSuspendReason('');
-          setSelectedUser(null);
-        }}
-        title="השעיית משתמש"
-      >
-        {selectedUser && (
-          <div className="space-y-4">
-            <p className="text-secondary-600">
-              האם אתה בטוח שברצונך להשעות את המשתמש{' '}
-              <span className="font-medium text-secondary-800">
-                {selectedUser.firstName} {selectedUser.lastName}
-              </span>
-              ?
-            </p>
-            <div>
-              <label className="block text-sm font-medium text-secondary-700 mb-2">
-                סיבת ההשעיה
-              </label>
-              <textarea
-                rows={3}
-                className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:border-primary-500 focus:ring-primary-500/20 resize-none"
-                placeholder="נא לפרט את סיבת ההשעיה..."
-                value={suspendReason}
-                onChange={(e) => setSuspendReason(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-3 pt-4">
-              <Button
-                variant="danger"
-                onClick={handleSuspend}
-                isLoading={isProcessing}
-                fullWidth
-              >
-                השעה משתמש
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowSuspendModal(false);
-                  setSuspendReason('');
-                  setSelectedUser(null);
-                }}
-              >
-                ביטול
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
+      <Card className="mt-6 bg-secondary-50 border border-secondary-200">
+        <div className="p-4 text-secondary-600 text-sm">
+          <p className="font-medium text-secondary-800 mb-2">שימו לב</p>
+          <p>
+            כרגע הדף מציג רשימת משתמשים וסטטוסי ברירת מחדל בלבד. פעולות השעיה והפעלה אינן
+            נתמכות בגרסה זו של ה-API, ולכן הכפתורים מוצגים במצב מוגבל.
+          </p>
+        </div>
+      </Card>
     </div>
   );
 }

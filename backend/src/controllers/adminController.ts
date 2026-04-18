@@ -327,6 +327,7 @@ export const getCategoriesWithCounts = async (req: AuthRequest, res: Response) =
           model: Employee,
           as: 'employees',
           attributes: [],
+          through: { attributes: [] },
         },
       ],
       attributes: {

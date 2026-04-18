@@ -8,7 +8,6 @@ export class User extends Model {
   declare email: string;
   declare password: string | null;
   declare address: string | null;
-  declare role: string;
   declare lastEntrance: Date | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
@@ -46,11 +45,6 @@ User.init(
     address: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    role: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'customer',
     },
     lastEntrance: {
       type: DataTypes.DATE,

@@ -108,20 +108,6 @@ export default function CategoriesPage() {
     }
   };
 
-  const toggleActive = async (category: AdminCategory) => {
-    try {
-      // Toggle is visual only for now - backend doesn't have isActive field
-      setCategories(
-        categories.map((c) =>
-          c.id === category.id ? { ...c, isActive: !c.isActive } : c
-        )
-      );
-      toast.info('שינוי סטטוס זמין בקרוב');
-    } catch (error) {
-      console.error('Failed to toggle category:', error);
-    }
-  };
-
   if (isLoading) {
     return <PageLoader />;
   }
@@ -188,12 +174,12 @@ export default function CategoriesPage() {
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => toggleActive(category)}
+                      disabled
                       className={classNames(
-                        'flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors',
+                        'flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium transition-colors opacity-60 cursor-not-allowed',
                         category.isActive
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                          : 'bg-secondary-100 text-secondary-600 hover:bg-secondary-200'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-secondary-100 text-secondary-600'
                       )}
                     >
                       {category.isActive ? (
@@ -232,6 +218,15 @@ export default function CategoriesPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      </Card>
+
+      <Card className="mt-6 bg-secondary-50 border border-secondary-200">
+        <div className="p-4 text-secondary-600 text-sm">
+          <p className="font-medium text-secondary-800 mb-2">שימו לב</p>
+          <p>
+            תכונת הסתרת קטגוריות אינה נתמכת כרגע ב-API. ניתן עדיין לערוך ולמחוק קטגוריות קיימות.
+          </p>
         </div>
       </Card>
 
