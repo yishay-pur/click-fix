@@ -91,21 +91,7 @@ export const professionalRegisterSchema = z
         { message: 'שעות עבודה לא תקינות' },
       ),
 
-    services: z
-      .array(
-        z.object({
-          name: z.string().min(1, 'שם השירות נדרש'),
-          minPrice: z.number().positive('מחיר חייב להיות חיובי'),
-          maxPrice: z.number().positive('מחיר חייב להיות חיובי'),
-        }),
-      )
-      .min(1, 'יש להוסיף לפחות שירות אחד')
-      .refine(
-        (services) => {
-          return services.every((s) => s.minPrice <= s.maxPrice);
-        },
-        { message: 'מחיר מינימלי חייב להיות נמוך ממחיר מקסימלי' },
-      ),
+    // Services are managed via local state, not react-hook-form
 
     // Step 5 - Terms
     acceptTerms: z.boolean().refine((val) => val === true, {

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as quoteService from '../services/quoteService';
+import Employee from '../models/Employee';
 
 // Extend Request type to include user
 interface AuthRequest extends Request {
@@ -23,9 +24,15 @@ export const createQuote = async (req: AuthRequest, res: Response) => {
       return;
     }
 
-    // TODO: Get categoryId from professional
-    // For now, we'll require it in the request or set a default
-    const categoryId = req.body.categoryId || 1;
+    // Get categoryId from professional or request body
+    let categoryId = req.body.categoryId || null;
+    if (!categoryId) {
+      const professional = await Employee.findByPk(Number(professionalId), {
+        include: [{ association: 'categories', through: { attributes: [] } }],
+      });
+      const proCategories = (professional as any)?.categories || [];
+      categoryId = proCategories[0]?.id || null;
+    }
 
     const quote = await quoteService.createQuote({
       customerId,

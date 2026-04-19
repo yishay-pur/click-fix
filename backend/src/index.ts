@@ -61,12 +61,11 @@ async function start() {
     console.log('🔌 Testing database connection...');
     await testConnection();
 
-    // TEMPORARILY DISABLED - Testing if sync causes infinite loop
     // Sync database schema
-    // if (process.env.SYNC_DB === 'true') {
-    //   console.log('🔄 Syncing database schema...');
-    //   await syncDatabase();
-    // }
+    if (process.env.SYNC_DB === 'true') {
+      console.log('🔄 Syncing database schema...');
+      await syncDatabase();
+    }
 
     // Seed database with sample data (only when explicitly enabled)
     if (process.env.SEED_DB === 'true') {

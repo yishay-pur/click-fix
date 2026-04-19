@@ -24,14 +24,15 @@ export function ProfessionalCard({
     profileImage,
     categoryName,
     rating,
-    reviewCount,
-    serviceAreas,
+    reviewCount = 0,
+    serviceAreas = [],
     isVerified,
     yearsOfExperience,
-    services,
+    services = [],
   } = professional;
 
   const fullName = `${firstName} ${lastName}`;
+  const overallRating = rating?.overall ?? 0;
   const minPrice = services.length > 0
     ? Math.min(...services.map(s => s.minPrice))
     : null;
@@ -55,7 +56,7 @@ export function ProfessionalCard({
             )}
           </div>
           <p className="text-sm text-secondary-500">{categoryName}</p>
-          <RatingStars rating={rating.overall} size="sm" reviewCount={reviewCount} />
+          <RatingStars rating={overallRating} size="sm" reviewCount={reviewCount} />
         </div>
       </Link>
     );
@@ -83,7 +84,7 @@ export function ProfessionalCard({
                 )}
               </div>
               <p className="text-secondary-600 mb-2">{categoryName}</p>
-              <RatingStars rating={rating.overall} reviewCount={reviewCount} />
+              <RatingStars rating={overallRating} reviewCount={reviewCount} />
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-secondary-100">
@@ -128,7 +129,7 @@ export function ProfessionalCard({
             )}
           </div>
           <p className="text-sm text-secondary-500 mb-2">{categoryName}</p>
-          <RatingStars rating={rating.overall} size="sm" reviewCount={reviewCount} />
+          <RatingStars rating={overallRating} size="sm" reviewCount={reviewCount} />
         </div>
         {minPrice && (
           <div className="text-left">

@@ -47,7 +47,7 @@ export function Header() {
             <img
               src='/logo/logo-large.svg'
               alt='אנשי שלומנו'
-              className='h-[100px]'
+              className='h-[130px]'
             />
             <span className='text-xl font-bold text-primary-600'>
               אנשי שלומנו

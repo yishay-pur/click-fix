@@ -95,7 +95,7 @@ export const findByProfessionalId = async (
 export const create = async (quoteData: {
   customerId: number | null;
   professionalId: number;
-  categoryId: number;
+  categoryId: number | null;
   guestName?: string | null;
   guestEmail?: string | null;
   answers: Array<{

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
   FileText,
@@ -11,9 +12,13 @@ import { Card, Button, Select, Avatar, Modal, Input, PageLoader } from '../../co
 import { formatDate, classNames } from '../../utils/helpers';
 import { QUOTE_STATUS_LABELS, QUOTE_STATUS_COLORS, URGENCY_BG_COLORS, URGENCY_LABELS } from '../../utils/constants';
 import { quoteService } from '../../services/quote.service';
+import { chatService } from '../../services/chat.service';
+import { useAuthStore } from '../../store/authStore';
 import type { QuoteRequest } from '../../types/quote.types';
 
 export default function IncomingRequestsPage() {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [requests, setRequests] = useState<QuoteRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -180,7 +185,22 @@ export default function IncomingRequestsPage() {
                       שלח הצעת מחיר
                     </Button>
                   )}
-                  <Button variant="outline">
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const chat = await chatService.createChat(
+                          Number(request.customerId),
+                          Number(user?.id),
+                          Number(request.id),
+                        );
+                        navigate(`/pro/chats/${chat.id}`);
+                      } catch (error) {
+                        console.error('Failed to start chat:', error);
+                        toast.error('שגיאה בפתיחת הצ׳אט');
+                      }
+                    }}
+                  >
                     <MessageSquare className="w-4 h-4" />
                     צ'אט
                   </Button>

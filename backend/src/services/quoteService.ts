@@ -33,7 +33,7 @@ export const getQuotesByProfessional = async (
 export const createQuote = async (quoteData: {
   customerId: number | null;
   professionalId: number;
-  categoryId: number;
+  categoryId: number | null;
   guestName?: string | null;
   guestEmail?: string | null;
   answers: Array<{

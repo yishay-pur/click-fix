@@ -18,6 +18,8 @@ import { professionalRegisterSchema, type ProfessionalRegisterFormData } from '.
 import { ISRAELI_CITIES, DAYS_OF_WEEK, CATEGORIES } from '../../utils/constants';
 import { classNames } from '../../utils/helpers';
 import type { WorkingHours, ServicePrice } from '../../types/professional.types';
+import { authService } from '../../services/auth.service';
+import { toast } from 'react-toastify';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -72,7 +74,7 @@ export default function ProfessionalRegisterPage() {
       case 3:
         return true; // Certificates are optional
       case 4:
-        return await trigger(['workingHours', 'services']);
+        return true; // Services and working hours are managed via local state
       case 5:
         return await trigger(['acceptTerms']);
       default:
@@ -136,17 +138,24 @@ export default function ProfessionalRegisterPage() {
   const onSubmit = async (data: ProfessionalRegisterFormData) => {
     setIsSubmitting(true);
     try {
-      const submitData = {
-        ...data,
-        certificates: certificates.filter((c) => c.name && c.file),
-        services,
-      };
-      console.log('Submitting professional registration:', submitData);
-      // In production: await authService.registerProfessional(submitData);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await authService.registerProfessional({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        categoryId: data.categoryId,
+        yearsOfExperience: data.yearsOfExperience,
+        description: data.description,
+        serviceAreas: data.serviceAreas,
+        workingHours: data.workingHours,
+        services: services.filter((s) => s.name),
+      });
+      toast.success('ההרשמה בוצעה בהצלחה! אנא התחבר עם הפרטים שלך');
       navigate('/login', { state: { registered: true, professional: true } });
-    } catch (error) {
-      console.error('Registration failed:', error);
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'שגיאה בהרשמה, נסה שוב';
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -214,7 +223,13 @@ export default function ProfessionalRegisterPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit, (formErrors) => {
+          console.log('Form validation errors:', formErrors);
+          const errorMessages = Object.entries(formErrors)
+            .map(([field, err]) => `${field}: ${err?.message || 'שגיאה'}`)
+            .join('\n');
+          toast.error(`יש שגיאות בטופס:\n${errorMessages}`);
+        })}>
           {/* Step 1: Personal Details */}
           {currentStep === 1 && (
             <Card>

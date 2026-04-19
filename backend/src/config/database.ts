@@ -8,6 +8,10 @@ const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING || '';
 export const sequelize = new Sequelize(DB_CONNECTION_STRING, {
   dialect: 'postgres',
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  dialectOptions: {
+    connectTimeout: 10000,
+    ssl: DB_CONNECTION_STRING.includes('supabase') ? { rejectUnauthorized: false } : false,
+  },
   pool: {
     max: 5,
     min: 0,

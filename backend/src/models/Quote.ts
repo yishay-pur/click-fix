@@ -5,7 +5,7 @@ export class Quote extends Model {
   declare id: number;
   declare customerId: number | null;
   declare professionalId: number;
-  declare categoryId: number;
+  declare categoryId: number | null;
   declare guestName: string | null;
   declare guestEmail: string | null;
   declare answers: Array<{
@@ -49,7 +49,7 @@ Quote.init(
     },
     categoryId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       field: 'category_id',
       references: {
         model: 'categories',

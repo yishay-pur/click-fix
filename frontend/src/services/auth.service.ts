@@ -17,6 +17,23 @@ export const authService = {
     return response.data;
   },
 
+  async registerProfessional(data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    password: string;
+    categoryId?: string;
+    yearsOfExperience?: number;
+    description?: string;
+    serviceAreas?: string[];
+    workingHours?: any[];
+    services?: any[];
+  }): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/register-professional', data);
+    return response.data;
+  },
+
   async logout(): Promise<void> {
     await api.post('/auth/logout');
     localStorage.removeItem('token');

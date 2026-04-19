@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { config } from 'dotenv';
 import User from '../models/User';
-import { create } from 'node:domain';
+import Employee from '../models/Employee';
 
 config();
 const JWT_SECRET = process.env.JWT_SECRET || '';
@@ -77,28 +77,119 @@ export const login = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: 'Email and password are required' });
 
+    // Check users table first (customers/admins)
     const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    if (user) {
+      const hashedPassword = (user.get('password') as string) || '';
+      const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+      if (!isPasswordValid)
+        return res.status(401).json({ message: 'Invalid credentials' });
 
-    // Compare hashed passwords
-    const hashedPassword = (user.get('password') as string) || '';
-    const isPasswordValid = await bcrypt.compare(password, hashedPassword);
-    if (!isPasswordValid)
+      const payload = { id: user.get('id'), email: user.get('email') };
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '8h' });
+
+      const safeUser = {
+        id: user.get('id'),
+        firstName: user.get('firstName'),
+        lastName: user.get('lastName'),
+        email: user.get('email'),
+        role: user.get('role') || 'customer',
+      };
+      return res.json({ token, user: safeUser });
+    }
+
+    // Check employees table (professionals)
+    const employee = await Employee.findOne({ where: { email } });
+    if (!employee) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const empPassword = employee.password || '';
+    const isEmpPasswordValid = await bcrypt.compare(password, empPassword);
+    if (!isEmpPasswordValid)
       return res.status(401).json({ message: 'Invalid credentials' });
 
-    const payload = { id: user.get('id'), email: user.get('email') };
+    const payload = { id: employee.id, email: employee.email };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '8h' });
 
-    const safeUser = {
-      id: user.get('id'),
-      firstName: user.get('firstName'),
-      lastName: user.get('lastName'),
-      email: user.get('email'),
-      role: user.get('role') || 'customer',
-    };
-    res.json({ token, user: safeUser });
+    return res.json({
+      token,
+      user: {
+        id: employee.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        role: 'professional',
+        status: employee.status,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: 'Login error', error: err });
+  }
+};
+
+export const registerProfessional = async (req: Request, res: Response) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      password,
+      categoryId,
+      yearsOfExperience,
+      description,
+      serviceAreas,
+      workingHours,
+      services,
+    } = req.body;
+
+    if (!email || !password || !firstName || !lastName || !phone) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Check if email already exists in either table
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ message: 'כתובת האימייל כבר קיימת במערכת' });
+    }
+    const existingEmployee = await Employee.findOne({ where: { email } });
+    if (existingEmployee) {
+      return res.status(409).json({ message: 'כתובת האימייל כבר קיימת במערכת' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create employee record
+    const newEmployee = await Employee.create({
+      firstName,
+      lastName,
+      email,
+      phone,
+      password: hashedPassword,
+      area: serviceAreas?.[0] || null,
+      description: description || null,
+      yearsOfExperience: yearsOfExperience || null,
+      workingHours: workingHours || null,
+      services: services || null,
+      status: 'pending',
+    });
+
+    const payload = { id: newEmployee.id, email: newEmployee.email };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '8h' });
+
+    res.status(201).json({
+      token,
+      user: {
+        id: newEmployee.id,
+        firstName: newEmployee.firstName,
+        lastName: newEmployee.lastName,
+        email: newEmployee.email,
+        role: 'professional',
+        status: newEmployee.status,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Registration error', error: err });
   }
 };
 
@@ -110,7 +201,19 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
 
     const user = await User.findByPk(req.user.id);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      // Check employees table
+      const employee = await Employee.findByPk(req.user.id);
+      if (!employee) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      return res.json({
+        id: employee.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        role: 'professional',
+        status: employee.status,
+      });
     }
 
     const safeUser = {
