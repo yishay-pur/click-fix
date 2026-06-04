@@ -1,4 +1,5 @@
 export { Button } from './Button';
+export { AddressAutocomplete } from './AddressAutocomplete';
 export { Input } from './Input';
 export { Select } from './Select';
 export { Checkbox } from './Checkbox';

@@ -41,8 +41,8 @@ export const createQuote = async (req: AuthRequest, res: Response) => {
 
     res.status(201).json({ quote });
   } catch (error) {
-    console.error('Error creating quote:', error);
-    res.status(500).json({ message: 'Error creating quote', error });
+    console.error('Error creating quote:', (error as Error).message);
+    res.status(500).json({ message: 'Error creating quote' });
   }
 };
 
@@ -90,8 +90,8 @@ export const getMyQuotes = async (req: AuthRequest, res: Response) => {
       totalPages,
     });
   } catch (error) {
-    console.error('Error fetching quotes:', error);
-    res.status(500).json({ message: 'Error fetching quotes', error });
+    console.error('Error fetching quotes:', (error as Error).message);
+    res.status(500).json({ message: 'Error fetching quotes' });
   }
 };
 
@@ -122,8 +122,8 @@ export const getIncomingRequests = async (req: AuthRequest, res: Response) => {
       totalPages,
     });
   } catch (error) {
-    console.error('Error fetching incoming requests:', error);
-    res.status(500).json({ message: 'Error fetching incoming requests', error });
+    console.error('Error fetching incoming requests:', (error as Error).message);
+    res.status(500).json({ message: 'Error fetching incoming requests' });
   }
 };
 
@@ -150,8 +150,8 @@ export const getQuoteById = async (req: AuthRequest, res: Response) => {
 
     res.status(200).json({ quote, response });
   } catch (error) {
-    console.error('Error fetching quote:', error);
-    res.status(500).json({ message: 'Error fetching quote', error });
+    console.error('Error fetching quote:', (error as Error).message);
+    res.status(500).json({ message: 'Error fetching quote' });
   }
 };
 
@@ -194,8 +194,8 @@ export const respondToQuote = async (req: AuthRequest, res: Response) => {
 
     res.status(201).json({ response });
   } catch (error) {
-    console.error('Error responding to quote:', error);
-    res.status(500).json({ message: 'Error responding to quote', error });
+    console.error('Error responding to quote:', (error as Error).message);
+    res.status(500).json({ message: 'Error responding to quote' });
   }
 };
 
@@ -224,8 +224,8 @@ export const acceptQuote = async (req: AuthRequest, res: Response) => {
     const updatedQuote = await quoteService.acceptQuote(Number(id));
     res.status(200).json({ quote: updatedQuote });
   } catch (error) {
-    console.error('Error accepting quote:', error);
-    res.status(500).json({ message: 'Error accepting quote', error });
+    console.error('Error accepting quote:', (error as Error).message);
+    res.status(500).json({ message: 'Error accepting quote' });
   }
 };
 
@@ -254,7 +254,7 @@ export const rejectQuote = async (req: AuthRequest, res: Response) => {
     const updatedQuote = await quoteService.rejectQuote(Number(id));
     res.status(200).json({ quote: updatedQuote });
   } catch (error) {
-    console.error('Error rejecting quote:', error);
-    res.status(500).json({ message: 'Error rejecting quote', error });
+    console.error('Error rejecting quote:', (error as Error).message);
+    res.status(500).json({ message: 'Error rejecting quote' });
   }
 };

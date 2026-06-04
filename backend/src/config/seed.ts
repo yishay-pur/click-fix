@@ -522,7 +522,7 @@ export const seedDatabase = async () => {
       - ${await Notification.count()} Notifications
     `);
   } catch (error) {
-    console.error("❌ Error seeding database:", error);
+    console.error("❌ Error seeding database:", (error as Error).message);
     //     throw error;
     //   }
   }

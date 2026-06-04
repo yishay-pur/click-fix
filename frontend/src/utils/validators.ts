@@ -26,14 +26,11 @@ export const registerSchema = z
     firstName: z.string().min(2, 'שם פרטי חייב להכיל לפחות 2 תווים'),
     lastName: z.string().min(2, 'שם משפחה חייב להכיל לפחות 2 תווים'),
     email: emailSchema,
-    // phone: phoneSchema,
     password: passwordSchema,
     confirmPassword: z.string().min(1, 'שדה חובה'),
-    // city: z.string().optional(),
-    // gender: z.enum(['male', 'female', 'other']).optional(),
-    // acceptTerms: z.boolean().refine((val) => val === true, {
-    //   message: 'יש לאשר את התקנון'
-    // })
+    city: z.string().optional(),
+    street: z.string().optional(),
+    houseNumber: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'הסיסמאות אינן תואמות',

@@ -1,8 +1,6 @@
 import * as categoryDAL from "../dal/categoryDAL";
 
 export const getAllCategories = async (): Promise<any[]> => {
-  console.log(55555);
-
   return categoryDAL.findAll();
 };
 

@@ -20,9 +20,8 @@ export const getAllEmployees = async (req: Request, res: Response) => {
     });
     res.status(200).json(employees);
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({ message: "Error fetching employees", error });
+    console.error('Error fetching employees:', (error as Error).message);
+    res.status(500).json({ message: "Error fetching employees" });
   }
 };
 
@@ -47,7 +46,7 @@ export const getEmployeeById = async (req: Request, res: Response) => {
     }
     res.status(200).json(employee);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employee", error });
+    res.status(500).json({ message: "Error fetching employee" });
   }
 };
 
@@ -62,7 +61,7 @@ export const getEmployeesByCategory = (req: Request, res: Response) => {
     // This endpoint would query employees by category if needed
     res.status(200).json([]);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employees", error });
+    res.status(500).json({ message: "Error fetching employees" });
   }
 };
 
@@ -77,7 +76,7 @@ export const getEmployeesByArea = (req: Request, res: Response) => {
     // This endpoint would query employees by area if needed
     res.status(200).json([]);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employees", error });
+    res.status(500).json({ message: "Error fetching employees" });
   }
 };
 
@@ -92,7 +91,7 @@ export const getEmployeesByRating = (req: Request, res: Response) => {
     // This endpoint would query employees by rating if needed
     res.status(200).json([]);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching employees", error });
+    res.status(500).json({ message: "Error fetching employees" });
   }
 };
 
@@ -121,7 +120,7 @@ export const createEmployee = async (req: Request, res: Response) => {
 
     res.status(201).json(employee);
   } catch (error) {
-    res.status(500).json({ message: "Error creating employee", error });
+    res.status(500).json({ message: "Error creating employee" });
   }
 };
 
@@ -139,7 +138,7 @@ export const updateEmployee = async (req: Request, res: Response) => {
     await employee.update(updates);
     res.status(200).json(employee);
   } catch (error) {
-    res.status(500).json({ message: "Error updating employee", error });
+    res.status(500).json({ message: "Error updating employee" });
   }
 };
 
@@ -156,7 +155,7 @@ export const deleteEmployee = async (req: Request, res: Response) => {
     await employee.destroy();
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ message: "Error deleting employee", error });
+    res.status(500).json({ message: "Error deleting employee" });
   }
 };
 
@@ -202,8 +201,8 @@ export const getEmployeeStats = async (req: Request, res: Response) => {
       conversionRate,
     });
   } catch (error) {
-    console.error("Error fetching employee stats:", error);
-    res.status(500).json({ message: "Error fetching employee stats", error });
+    console.error("Error fetching employee stats:", (error as Error).message);
+    res.status(500).json({ message: "Error fetching employee stats" });
   }
 };
 
@@ -243,8 +242,8 @@ export const getRecentRequests = async (req: Request, res: Response) => {
 
     res.json(requests);
   } catch (error) {
-    console.error("Error fetching recent requests:", error);
-    res.status(500).json({ message: "Error fetching recent requests", error });
+    console.error("Error fetching recent requests:", (error as Error).message);
+    res.status(500).json({ message: "Error fetching recent requests" });
   }
 };
 
@@ -361,7 +360,7 @@ export const searchEmployees = async (req: Request, res: Response) => {
       totalPages,
     });
   } catch (error) {
-    console.error('Error searching employees:', error);
-    res.status(500).json({ message: 'Error searching employees', error });
+    console.error('Error searching employees:', (error as Error).message);
+    res.status(500).json({ message: 'Error searching employees' });
   }
 };

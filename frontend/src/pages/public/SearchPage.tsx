@@ -256,9 +256,6 @@ export default function SearchPage() {
                   שומר שבת (אין שעות עבודה בשבת)
                 </label>
 
-                <Button fullWidth onClick={handleSearch}>
-                  החל סינון
-                </Button>
               </div>
             </Card>
           </aside>

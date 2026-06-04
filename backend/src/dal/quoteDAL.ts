@@ -19,7 +19,6 @@ export const findAll = async (): Promise<any[]> => {
       ],
     });
   } catch (error) {
-    console.error("Error in quoteDAL.findAll:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const findById = async (id: number): Promise<any | null> => {
       ],
     });
   } catch (error) {
-    console.error("Error in quoteDAL.findById:", error);
     throw error;
   }
 };
@@ -71,7 +69,6 @@ export const findByCustomerId = async (
 
     return { quotes: rows, total: count };
   } catch (error) {
-    console.error("Error in quoteDAL.findByCustomerId:", error);
     throw error;
   }
 };
@@ -107,7 +104,6 @@ export const findByProfessionalId = async (
 
     return { quotes: rows, total: count };
   } catch (error) {
-    console.error("Error in quoteDAL.findByProfessionalId:", error);
     throw error;
   }
 };
@@ -130,7 +126,6 @@ export const create = async (quoteData: {
   try {
     return Quote.create(quoteData as any);
   } catch (error) {
-    console.error("Error in quoteDAL.create:", error);
     throw error;
   }
 };
@@ -148,7 +143,6 @@ export const update = async (
     await quote.update(updates as any);
     return quote;
   } catch (error) {
-    console.error("Error in quoteDAL.update:", error);
     throw error;
   }
 };
@@ -158,7 +152,6 @@ export const delete_ = async (id: number): Promise<boolean> => {
     const deleted = await Quote.destroy({ where: { id } });
     return deleted > 0;
   } catch (error) {
-    console.error("Error in quoteDAL.delete_:", error);
     throw error;
   }
 };
@@ -175,7 +168,6 @@ export const createResponse = async (responseData: {
   try {
     return QuoteResponse.create(responseData as any);
   } catch (error) {
-    console.error("Error in quoteDAL.createResponse:", error);
     throw error;
   }
 };
@@ -189,7 +181,6 @@ export const findResponseByQuoteId = async (
       include: [{ model: Employee, as: 'professional' }],
     });
   } catch (error) {
-    console.error("Error in quoteDAL.findResponseByQuoteId:", error);
     throw error;
   }
 };

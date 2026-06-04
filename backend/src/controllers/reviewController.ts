@@ -8,9 +8,8 @@ export const getAllReviews = async (req: Request, res: Response) => {
     });
     res.status(200).json(reviews);
   } catch (error) {
-    console.log(error);
-    
-    res.status(500).json({ message: "Error fetching reviews", error });
+    console.error('Error fetching reviews:', (error as Error).message);
+    res.status(500).json({ message: "Error fetching reviews" });
   }
 };
 

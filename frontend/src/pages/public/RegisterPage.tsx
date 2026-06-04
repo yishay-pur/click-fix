@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { Button, Input, Card } from '../../components/common';
+import { Button, Input, Card, AddressAutocomplete } from '../../components/common';
 import { useAuthStore } from '../../store/authStore';
 import { registerSchema, RegisterFormData } from '../../utils/validators';
-// import { GENDER_OPTIONS, ISRAELI_CITIES } from '../../utils/constants';
+import { searchCities, searchStreets } from '../../api/address.api';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -18,6 +18,8 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    control,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -27,8 +29,13 @@ export default function RegisterPage() {
       email: '',
       password: '',
       confirmPassword: '',
+      city: '',
+      street: '',
+      houseNumber: '',
     },
   });
+
+  const selectedCity = watch('city');
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
@@ -40,20 +47,9 @@ export default function RegisterPage() {
     }
   };
 
-  // const cityOptions = ISRAELI_CITIES.map((city) => ({
-  //   value: city,
-  //   label: city,
-  // }));
-
-  // const genderOptions = GENDER_OPTIONS.map((g) => ({
-  //   value: g.value,
-  //   label: g.label,
-  // }));
-
   return (
     <div className='min-h-screen bg-secondary-50 flex items-center justify-center py-12 px-4'>
       <div className='w-full max-w-lg'>
-        {/* Logo/Title */}
         <div className='text-center mb-8'>
           <Link to='/' className='inline-block'>
             <h1 className='text-3xl font-bold text-primary-600'>אנשי שלומנו</h1>
@@ -64,12 +60,10 @@ export default function RegisterPage() {
         <Card>
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
             <div className='text-center mb-6'>
-              <h2 className='text-2xl font-semibold text-secondary-800'>
-                הרשמה
-              </h2>
+              <h2 className='text-2xl font-semibold text-secondary-800'>הרשמה</h2>
             </div>
 
-            {/* Name fields */}
+            {/* Name */}
             <div className='grid grid-cols-2 gap-4'>
               <Input
                 label='שם פרטי'
@@ -87,7 +81,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Contact fields */}
+            {/* Email */}
             <Input
               label='אימייל'
               type='email'
@@ -97,16 +91,7 @@ export default function RegisterPage() {
               {...register('email')}
             />
 
-            {/* <Input
-              label="טלפון"
-              type="tel"
-              placeholder="0501234567"
-              required
-              error={errors.phone?.message}
-              {...register('phone')}
-            /> */}
-
-            {/* Password fields */}
+            {/* Password */}
             <div className='relative'>
               <Input
                 label='סיסמה'
@@ -121,11 +106,7 @@ export default function RegisterPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className='absolute left-3 top-[42px] text-secondary-400 hover:text-secondary-600'
               >
-                {showPassword ? (
-                  <EyeOff className='w-5 h-5' />
-                ) : (
-                  <Eye className='w-5 h-5' />
-                )}
+                {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
               </button>
             </div>
 
@@ -143,55 +124,57 @@ export default function RegisterPage() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className='absolute left-3 top-[42px] text-secondary-400 hover:text-secondary-600'
               >
-                {showConfirmPassword ? (
-                  <EyeOff className='w-5 h-5' />
-                ) : (
-                  <Eye className='w-5 h-5' />
-                )}
+                {showConfirmPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
               </button>
             </div>
 
-            {/* Optional fields */}
-            {/* <div className="grid grid-cols-2 gap-4">
-              <Select
-                label="עיר"
-                options={cityOptions}
-                placeholder="בחר עיר"
-                error={errors.city?.message}
-                {...register('city')}
-              />
-              <Select
-                label="מגדר"
-                options={genderOptions}
-                placeholder="בחר מגדר"
-                error={errors.gender?.message}
-                {...register('gender')}
-              />
-            </div> */}
+            {/* Address section */}
+            <div className='pt-1'>
+              <p className='text-sm font-medium text-secondary-600 mb-3'>כתובת (אופציונלי)</p>
 
-            {/* Terms */}
-            {/* <Checkbox
-              label={
-                <span>
-                  קראתי ואני מסכים/מה ל
-                  <Link
-                    to='/terms'
-                    className='text-primary-600 hover:text-primary-700 underline mx-1'
-                  >
-                    תנאי השימוש
-                  </Link>
-                  ול
-                  <Link
-                    to='/privacy'
-                    className='text-primary-600 hover:text-primary-700 underline mx-1'
-                  >
-                    מדיניות הפרטיות
-                  </Link>
-                </span>
-              }
-              error={errors.acceptTerms?.message}
-              {...register('acceptTerms')}
-            /> */}
+              {/* City + Street */}
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4'>
+                <Controller
+                  name='city'
+                  control={control}
+                  render={({ field }) => (
+                    <AddressAutocomplete
+                      label='עיר'
+                      placeholder='התחל להקליד עיר...'
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      fetchSuggestions={searchCities}
+                      error={errors.city?.message}
+                      name='city'
+                    />
+                  )}
+                />
+                <Controller
+                  name='street'
+                  control={control}
+                  render={({ field }) => (
+                    <AddressAutocomplete
+                      label='רחוב'
+                      placeholder={selectedCity ? 'התחל להקליד רחוב...' : 'בחר עיר תחילה'}
+                      value={field.value || ''}
+                      onChange={field.onChange}
+                      fetchSuggestions={(q) => searchStreets(selectedCity || '', q)}
+                      disabled={!selectedCity}
+                      error={errors.street?.message}
+                      name='street'
+                    />
+                  )}
+                />
+              </div>
+
+              {/* House number */}
+              <Input
+                label='מספר בית'
+                placeholder='25'
+                error={errors.houseNumber?.message}
+                {...register('houseNumber')}
+              />
+            </div>
 
             <Button type='submit' fullWidth isLoading={isLoading}>
               <UserPlus className='w-5 h-5' />
@@ -202,10 +185,7 @@ export default function RegisterPage() {
           <div className='mt-6 text-center'>
             <p className='text-secondary-600'>
               כבר יש לך חשבון?{' '}
-              <Link
-                to='/login'
-                className='text-primary-600 hover:text-primary-700 font-medium'
-              >
+              <Link to='/login' className='text-primary-600 hover:text-primary-700 font-medium'>
                 התחברות
               </Link>
             </p>
@@ -213,12 +193,6 @@ export default function RegisterPage() {
 
           <div className='mt-4 text-center' style={{ opacity: '0.5' }}>
             הרשמה כבעל מקצוע (בקרוב)
-            {/* <Link
-              to='/pro/register'
-              className='text-sm text-secondary-500 hover:text-secondary-700'
-            >
-              הרשמה כבעל מקצוע
-            </Link> */}
           </div>
         </Card>
       </div>
