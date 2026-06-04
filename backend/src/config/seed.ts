@@ -13,16 +13,17 @@ import bcrypt from "bcryptjs";
 export const seedDatabase = async () => {
   try {
     // Check if data already exists
-    const categoryCount = await Category.count();
-    if (categoryCount > 0) {
+    const employeeCount = await Employee.count();
+    if (employeeCount > 0) {
       console.log("✅ Database already seeded, skipping...");
-      //   return;
+      return;
     }
 
     console.log("🌱 Seeding database with meaningful mock data...");
 
     // ===== CREATE CATEGORIES =====
-    const categories = categoryCount
+    const existingCategoryCount = await Category.count();
+    const categories = existingCategoryCount
       ? await Category.findAll()
       : await Category.bulkCreate([
           {
@@ -65,8 +66,12 @@ export const seedDatabase = async () => {
 
     // ===== CREATE CUSTOMERS (USERS) =====
     const hashedPassword = await bcrypt.hash("password123", 10);
-    const users = await User.bulkCreate([
+    const existingUserCount = await User.count();
+    const users = existingUserCount
+      ? await User.findAll({ limit: 5 })
+      : await User.bulkCreate([
       {
+        id: 100001,
         firstName: "יוני",
         lastName: "כהן",
         email: "yoni.cohen@email.com",
@@ -75,6 +80,7 @@ export const seedDatabase = async () => {
         lastEntrance: new Date(),
       },
       {
+        id: 100002,
         firstName: "מיכל",
         lastName: "ליברמן",
         email: "michal.liberman@email.com",
@@ -83,6 +89,7 @@ export const seedDatabase = async () => {
         lastEntrance: new Date(),
       },
       {
+        id: 100003,
         firstName: "דוד",
         lastName: "גולן",
         email: "david.golan@email.com",
@@ -91,6 +98,7 @@ export const seedDatabase = async () => {
         lastEntrance: new Date(),
       },
       {
+        id: 100004,
         firstName: "שרה",
         lastName: "מילר",
         email: "sarah.miller@email.com",
@@ -99,6 +107,7 @@ export const seedDatabase = async () => {
         lastEntrance: new Date(),
       },
       {
+        id: 100005,
         firstName: "אור",
         lastName: "בנימיני",
         email: "or.binyamini@email.com",
@@ -111,6 +120,7 @@ export const seedDatabase = async () => {
     // ===== CREATE PROFESSIONALS (EMPLOYEES) =====
     const employees = await Employee.bulkCreate([
       {
+        id: 200001,
         firstName: "משה",
         lastName: "כהן",
         area: "מרכז",
@@ -141,6 +151,7 @@ export const seedDatabase = async () => {
         approvedBy: 1,
       },
       {
+        id: 200002,
         firstName: "ליאור",
         lastName: "רביד",
         area: "מרכז",
@@ -166,6 +177,7 @@ export const seedDatabase = async () => {
         approvedBy: 1,
       },
       {
+        id: 200003,
         firstName: "אביגיל",
         lastName: "עמרם",
         area: "צפון",
@@ -191,6 +203,7 @@ export const seedDatabase = async () => {
         approvedBy: 1,
       },
       {
+        id: 200004,
         firstName: "רחל",
         lastName: "לי",
         area: "דרום",
@@ -221,6 +234,7 @@ export const seedDatabase = async () => {
         approvedBy: 1,
       },
       {
+        id: 200005,
         firstName: "יעל",
         lastName: "שנער",
         area: "מרכז",
@@ -251,6 +265,7 @@ export const seedDatabase = async () => {
         approvedBy: 1,
       },
       {
+        id: 200006,
         firstName: "אלכס",
         lastName: "רוזנברג",
         area: "מרכז",

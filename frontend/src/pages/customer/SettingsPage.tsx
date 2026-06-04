@@ -2,17 +2,15 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Settings, User, Lock, Bell, Shield, Check } from 'lucide-react';
+import { Settings, User, Lock, Bell, Check } from 'lucide-react';
 import { Button, Card, Input, Select } from '../../components/common';
 import { useAuthStore } from '../../store/authStore';
 import { ISRAELI_CITIES, GENDER_OPTIONS } from '../../utils/constants';
-import { phoneSchema } from '../../utils/validators';
 import { classNames } from '../../utils/helpers';
 
 const profileSchema = z.object({
   firstName: z.string().min(2, 'שם פרטי חייב להכיל לפחות 2 תווים'),
   lastName: z.string().min(2, 'שם משפחה חייב להכיל לפחות 2 תווים'),
-  phone: phoneSchema,
   city: z.string().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
 });
@@ -32,7 +30,7 @@ const passwordSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
-type SettingsTab = 'profile' | 'password' | 'notifications' | 'privacy';
+type SettingsTab = 'profile' | 'password' | 'notifications';
 
 export default function SettingsPage() {
   const { user, updateUser } = useAuthStore();
@@ -50,7 +48,6 @@ export default function SettingsPage() {
     defaultValues: {
       firstName: user?.firstName || '',
       lastName: user?.lastName || '',
-      phone: user?.phone || '',
       city: user?.city || '',
       gender: user?.gender,
     },
@@ -99,7 +96,6 @@ export default function SettingsPage() {
     { id: 'profile' as const, label: 'פרטים אישיים', icon: User },
     { id: 'password' as const, label: 'סיסמה', icon: Lock },
     { id: 'notifications' as const, label: 'התראות', icon: Bell },
-    { id: 'privacy' as const, label: 'פרטיות', icon: Shield },
   ];
 
   const cityOptions = ISRAELI_CITIES.map((c) => ({ value: c, label: c }));
@@ -172,14 +168,6 @@ export default function SettingsPage() {
                   />
                 </div>
 
-                <Input
-                  label="טלפון"
-                  type="tel"
-                  dir="ltr"
-                  required
-                  {...registerProfile('phone')}
-                  error={profileErrors.phone?.message}
-                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Select
@@ -273,34 +261,6 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {activeTab === 'privacy' && (
-            <Card>
-              <h2 className="text-lg font-semibold text-secondary-800 mb-6">
-                פרטיות
-              </h2>
-              <div className="space-y-6">
-                <div className="p-4 bg-secondary-50 rounded-lg">
-                  <h3 className="font-medium text-secondary-800 mb-2">מחיקת חשבון</h3>
-                  <p className="text-sm text-secondary-600 mb-4">
-                    מחיקת החשבון תסיר את כל הנתונים שלך מהמערכת. פעולה זו אינה הפיכה.
-                  </p>
-                  <Button variant="danger" size="sm">
-                    מחק חשבון
-                  </Button>
-                </div>
-
-                <div className="p-4 bg-secondary-50 rounded-lg">
-                  <h3 className="font-medium text-secondary-800 mb-2">ייצוא נתונים</h3>
-                  <p className="text-sm text-secondary-600 mb-4">
-                    הורד עותק של כל הנתונים שלך מהמערכת.
-                  </p>
-                  <Button variant="outline" size="sm">
-                    הורד נתונים
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          )}
         </div>
       </div>
     </div>

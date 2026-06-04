@@ -71,8 +71,13 @@ export default function ProfessionalRegisterPage() {
         return await trigger(['categoryId', 'serviceAreas']);
       case 3:
         return true; // Certificates are optional
-      case 4:
-        return await trigger(['workingHours', 'services']);
+      case 4: {
+        const hoursValid = await trigger(['workingHours']);
+        const servicesValid =
+          services.length > 0 &&
+          services.every((s) => s.name.trim() && s.minPrice > 0 && s.maxPrice > 0 && s.minPrice <= s.maxPrice);
+        return hoursValid && servicesValid;
+      }
       case 5:
         return await trigger(['acceptTerms']);
       default:
