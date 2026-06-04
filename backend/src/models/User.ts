@@ -11,6 +11,8 @@ export class User extends Model {
   declare lastEntrance: Date | null;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
+  declare isAdmin?: boolean;
+  declare isManager?: boolean;
 }
 
 User.init(
@@ -50,6 +52,16 @@ User.init(
       type: DataTypes.DATE,
       allowNull: true,
       field: 'last_entrance',
+    },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      field: 'is_admin',
+    },
+    isManager: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      field: 'is_manager',
     },
   },
   {

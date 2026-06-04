@@ -422,3 +422,86 @@ function formatTimeAgo(date: Date): string {
   if (diffInHours < 24) return `לפני ${diffInHours} שעות`;
   return `לפני ${diffInDays} ימים`;
 }
+
+export const getAllManagers = async (req: AuthRequest, res: Response) => {
+  try {
+    const managers = await User.findAll({
+      where: {
+        isManager: true
+      },
+      order: [['createdAt', 'DESC']],
+    });
+
+    res.status(200).json(managers.map(({id,isAdmin, isManager, firstName, lastName, createdAt, lastEntrance}) => ({
+      id: id.toString(),
+      firstName,
+      lastName,
+      isAdmin,
+      isManager,
+      createdAt,
+      lastEntrance,
+
+    })));
+  } catch (error) {
+    console.error('Error fetching managers:', (error as Error).message);
+    res.status(500).json({ message: 'Error fetching managers' });
+  }
+};
+
+export const deleteManager = async (req: AuthRequest, res: Response) => {
+  try {    const { id } = req.params;
+    const manager = await User.findByPk(id);
+    if (!manager) {
+      res.status(404).json({ message: 'Manager not found' });
+      return;
+    }
+
+    if (!manager.get('isManager')|| manager.get('isAdmin')) {
+      res.status(400).json({ message: 'User is not a manager' });
+      return;
+    }
+
+    await manager.destroy();
+    res.status(200).json({ message: 'Manager deleted successfully' });
+  }
+
+  catch (error) {
+    console.error('Error deleting manager:', (error as Error).message);
+    res.status(500).json({ message: 'Error deleting manager' });
+  }
+};
+
+export const createManager = async (req: AuthRequest, res: Response) => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
+    if (!firstName||!lastName||!email || !password) {
+      res.status(400).json({ message: 'All fields are required' });
+      return;
+    }
+    User.findOne({ where: { email } }).then((existingUser) => {
+      if (existingUser) {
+        console.log();
+        
+        res.status(400).json({ message: 'Email already in use' });
+        return;
+      }
+      User.create({
+        firstName,
+        lastName,
+        email,
+        password,
+        isManager: true,
+      })
+        .then((newManager) => {
+          res.status(201).json({ message: 'Manager created successfully', manager: newManager });
+        })
+        .catch((error) => {
+          console.error('Error creating manager:', (error as Error).message);
+          res.status(500).json({ message: 'Error creating manager' });
+        });
+    });
+  } catch (error) {
+    console.error('Error creating manager:', (error as Error).message);
+    res.status(500).json({ message: 'Error creating manager' });
+  }
+};

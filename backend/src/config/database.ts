@@ -7,7 +7,7 @@ const DB_CONNECTION_STRING = process.env.DB_CONNECTION_STRING || "";
 
 export const sequelize = new Sequelize(DB_CONNECTION_STRING, {
   dialect: "postgres",
-  logging: false,
+  logging: true,
   pool: {
     max: 5,
     min: 0,
@@ -32,7 +32,7 @@ export const testConnection = async () => {
 
 export const syncDatabase = async () => {
   try {
-    await sequelize.sync();
+    // await sequelize.sync();
     console.log("✅ Database synchronized");
   } catch (error) {
     console.error("❌ Error syncing database:", error);

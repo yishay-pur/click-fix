@@ -74,6 +74,17 @@ export interface AdminReview {
   flagReason?: string;
 }
 
+export interface Manager {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  isAdmin: boolean;
+  isManager: boolean;
+  createdAt: Date;
+  lastEntrance?: Date;
+}
+
 export const adminService = {
   /**
    * Get dashboard statistics
@@ -164,6 +175,29 @@ export const adminService = {
   getReviews: async (): Promise<AdminReview[]> => {
     const response = await api.get<AdminReview[]>('/admin/reviews');
     return response.data;
+  },
+
+  /**
+   * Get all managers
+   */
+  getAllManagers: async (): Promise<Manager[]> => {
+    const response = await api.get<Manager[]>('/admin/managers');
+    return response.data;
+  },
+
+  /**
+   * Create a new manager
+   */
+  createManager: async (data: { firstName: string; lastName: string; email: string; password: string }): Promise<Manager> => {
+    const response = await api.post<Manager>('/admin/managers', data);
+    return response.data;
+  },
+
+  /**
+   * Delete a manager
+   */
+  deleteManager: async (id: string): Promise<void> => {
+    await api.delete(`/admin/managers/${id}`);
   },
 };
 

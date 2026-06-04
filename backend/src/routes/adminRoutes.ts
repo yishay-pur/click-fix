@@ -31,4 +31,10 @@ router.get('/users', authMiddleware, adminController.getAllUsers);
 // GET /api/admin/reviews - Get all reviews
 router.get('/reviews', authMiddleware, adminController.getAllReviews);
 
+router.get('/managers', authMiddleware, adminController.getAllManagers);
+
+router.post('/managers', authMiddleware, adminController.createManager);
+
+router.delete('/managers/:id', authMiddleware, adminController.deleteManager);
+
 export default router;

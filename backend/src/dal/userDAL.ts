@@ -11,6 +11,13 @@ export const findAll = async (): Promise<any[]> => {
     throw error;
   }
 };
+export const findAdmins = async () => {
+  try {
+    return User.findAll({ where: { isAdmin: true } });
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const findById = async (id: number): Promise<any | null> => {
   try {
@@ -20,7 +27,7 @@ export const findById = async (id: number): Promise<any | null> => {
   }
 };
 
-export const findByEmail = async (email: string): Promise<any | null> => {
+export const findByEmail = async (email: string) => {
   try {
     return User.findOne({ where: { email } });
   } catch (error) {

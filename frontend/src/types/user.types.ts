@@ -14,6 +14,8 @@ export interface User {
   status: UserStatus;
   createdAt: Date;
   updatedAt: Date;
+  isAdmin?: boolean;
+  isManager?: boolean;
 }
 
 export interface CustomerUser extends User {

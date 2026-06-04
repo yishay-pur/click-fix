@@ -10,11 +10,15 @@ import {
   FileText,
   Settings,
   ChevronLeft,
+  Trash2,
+  Plus,
+  X,
 } from "lucide-react";
 import { Card, PageLoader } from "../../components/common";
 import { classNames } from "../../utils/helpers";
-import { adminService } from "../../services/admin.service";
+import { adminService, type Manager } from "../../services/admin.service";
 import type { RecentActivity } from "../../services/admin.service";
+import { useAuthStore } from "../../store/authStore";
 import { toast } from "react-toastify";
 
 interface DashboardStat {
@@ -40,12 +44,43 @@ const activityIcons: Record<RecentActivity["type"], React.ElementType> = {
   approval: Briefcase,
 };
 
+interface ProfessionData {
+  name: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
 export default function AdminDashboard() {
+  const { user } = useAuthStore();
   const [stats, setStats] = useState<DashboardStat[]>([]);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>(
     []
   );
+  const [categories, setCategories] = useState<any[]>([]);
+  const [managers, setManagers] = useState<Manager[]>([]);
+  const [otherAdmins, setOtherAdmins] = useState<Manager[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddManagerModal, setShowAddManagerModal] = useState(false);
+  const [isCreatingManager, setIsCreatingManager] = useState(false);
+  const [newManagerForm, setNewManagerForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+
+  // Color palette for professions
+  const professionColors = [
+    "#8b5cf6", // purple
+    "#ec4899", // pink
+    "#14b8a6", // teal
+    "#f59e0b", // amber
+    "#06b6d4", // cyan
+    "#8b5cf6", // purple
+    "#f87171", // red
+    "#4ade80", // green
+  ];
 
   // Helper function to create pie chart percentages
   const getPieChartData = () => {
@@ -62,6 +97,26 @@ export default function AdminDashboard() {
     const quotesThisMonth =
       stats.find((s) => s.label === "הצעות מחיר החודש")?.value || 0;
 
+    // Calculate profession distribution
+    const totalProfessionalsInCategories = categories.reduce(
+      (sum, cat) => sum + (cat.professionalsCount || 0),
+      0
+    );
+
+    const professionData: ProfessionData[] = categories
+      .filter((cat) => (cat.professionalsCount || 0) > 0)
+      .map((cat, index) => ({
+        name: cat.name,
+        count: cat.professionalsCount || 0,
+        percentage: Math.round(
+          ((cat.professionalsCount || 0) /
+            Math.max(totalProfessionalsInCategories, 1)) *
+            100
+        ),
+        color: professionColors[index % professionColors.length],
+      }))
+      .sort((a, b) => b.count - a.count);
+
     return {
       totalUsers,
       totalProfessionals,
@@ -69,6 +124,7 @@ export default function AdminDashboard() {
       reviewsToCheck,
       openComplaints,
       quotesThisMonth,
+      professionData,
       usersPercent: Math.round(
         (totalUsers / Math.max(totalUsers + totalProfessionals, 1)) * 100
       ),
@@ -99,13 +155,68 @@ export default function AdminDashboard() {
 
   const chartData = getPieChartData();
 
+  const handleCreateManager = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newManagerForm.firstName || !newManagerForm.lastName || !newManagerForm.email || !newManagerForm.password) {
+      toast.error('אנא מלא את כל השדות');
+      return;
+    }
+
+    setIsCreatingManager(true);
+    try {
+      await adminService.createManager(newManagerForm);
+      toast.success('מנהל חדש נוצר בהצלחה');
+      setNewManagerForm({ firstName: '', lastName: '', email: '', password: '' });
+      setShowAddManagerModal(false);
+      
+      // Refresh managers list
+      if (user?.isAdmin) {
+        const managersData = await adminService.getAllManagers();
+        const admins = managersData.filter((m) => m.isAdmin);
+        const regularManagers = managersData.filter((m) => !m.isAdmin);
+        setOtherAdmins(admins.filter((a) => a.id !== user?.id));
+        setManagers(regularManagers);
+      }
+    } catch (error) {
+      console.error('Error creating manager:', error);
+      toast.error('שגיאה בהוספת מנהל');
+    } finally {
+      setIsCreatingManager(false);
+    }
+  };
+
+  const handleDeleteManager = async (id: string) => {
+    if (!window.confirm('האם בטוח שברצונך למחוק מנהל זה?')) {
+      return;
+    }
+
+    try {
+      await adminService.deleteManager(id);
+      toast.success('מנהל נמחק בהצלחה');
+      
+      // Refresh managers list
+      if (user?.isAdmin) {
+        const managersData = await adminService.getAllManagers();
+        const admins = managersData.filter((m) => m.isAdmin);
+        const regularManagers = managersData.filter((m) => !m.isAdmin);
+        setOtherAdmins(admins.filter((a) => a.id !== user?.id));
+        setManagers(regularManagers);
+      }
+    } catch (error) {
+      console.error('Error deleting manager:', error);
+      toast.error('שגיאה במחיקת מנהל');
+    }
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // Fetch stats and activity in parallel
-        const [statsData, activityData] = await Promise.all([
+        // Fetch stats, activity, and categories in parallel
+        const [statsData, activityData, categoriesData] = await Promise.all([
           adminService.getDashboardStats(),
           adminService.getRecentActivity(),
+          adminService.getCategories(),
         ]);
 
         // Transform stats data to match UI format
@@ -159,6 +270,21 @@ export default function AdminDashboard() {
 
         setStats(transformedStats);
         setRecentActivities(activityData);
+        setCategories(categoriesData);
+
+        // If user is admin, fetch managers
+        if (user?.isAdmin) {
+          try {
+            const managersData = await adminService.getAllManagers();
+            // Separate admins and managers
+            const admins = managersData.filter((m) => m.isAdmin);
+            const regularManagers = managersData.filter((m) => !m.isAdmin);
+            setOtherAdmins(admins.filter((a) => a.id !== user?.id));
+            setManagers(regularManagers);
+          } catch (error) {
+            console.error("Failed to fetch managers:", error);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
         toast.error("שגיאה בטעינת נתוני הדשבורד");
@@ -168,7 +294,7 @@ export default function AdminDashboard() {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [user]);
 
   if (isLoading) {
     return <PageLoader />;
@@ -214,7 +340,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Pie Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {/* Chart 1: Users vs Professionals */}
         <Card>
           <h2 className="text-lg font-semibold text-secondary-800 mb-6">
@@ -498,7 +624,237 @@ export default function AdminDashboard() {
             </div>
           </div>
         </Card>
+
+        {/* Chart 5: Employees by Profession */}
+        {chartData.professionData && chartData.professionData.length > 0 && (
+          <Card>
+            <h2 className="text-lg font-semibold text-secondary-800 mb-6">
+              בעלי מקצוע לפי מקצוע
+            </h2>
+            <div className="flex flex-col gap-4">
+              <div className="space-y-2">
+                {chartData.professionData.slice(0, 4).map((profession) => {
+                  return (
+                    <div key={profession.name} className="flex items-center gap-2">
+                      <div
+                        className="w-4 h-4 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: profession.color }}
+                      />
+                      <span className="text-xs text-secondary-600 flex-1">
+                        {profession.name}: {profession.count} ({profession.percentage}%)
+                      </span>
+                    </div>
+                  );
+                })}
+                {chartData.professionData.length > 4 && (
+                  <div className="text-xs text-secondary-500 pt-2">
+                    ועוד {chartData.professionData.length - 4} קטגוריות
+                  </div>
+                )}
+              </div>
+              <div className="pt-2 border-t border-secondary-100">
+                <div className="text-sm font-semibold text-secondary-700">
+                  סה"כ בעלי מקצוע:{" "}
+                  {chartData.professionData.reduce((sum, p) => sum + p.count, 0)}
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
+
+      {/* Admin Panel - Managers & Admins Management */}
+      {user?.isAdmin && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Managers List */}
+          <Card>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold text-secondary-800">
+                מנהלים
+              </h2>
+              <button
+                onClick={() => setShowAddManagerModal(true)}
+                className="flex items-center gap-2 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                הוסף מנהל
+              </button>
+            </div>
+            {managers.length === 0 ? (
+              <p className="text-secondary-500">אין מנהלים כרגע</p>
+            ) : (
+              <div className="space-y-2">
+                {managers.map((manager) => (
+                  <div
+                    key={manager.id}
+                    className="flex items-center justify-between p-3 bg-secondary-50 rounded-lg"
+                  >
+                    <div>
+                      <p className="font-medium text-secondary-800">
+                        {manager.firstName} {manager.lastName}
+                      </p>
+                      {manager.email && (
+                        <p className="text-sm text-secondary-500">{manager.email}</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => handleDeleteManager(manager.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="מחק מנהל"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* Other Admins List */}
+          {otherAdmins.length > 0 && (
+            <Card>
+              <h2 className="text-lg font-semibold text-secondary-800 mb-6">
+                מנהלים אחרים
+              </h2>
+              <div className="space-y-2">
+                {otherAdmins.map((admin) => (
+                  <div
+                    key={admin.id}
+                    className="flex items-center justify-between p-3 bg-secondary-50 rounded-lg"
+                  >
+                    <div>
+                      <p className="font-medium text-secondary-800">
+                        {admin.firstName} {admin.lastName}
+                      </p>
+                      {admin.email && (
+                        <p className="text-sm text-secondary-500">{admin.email}</p>
+                      )}
+                    </div>
+                    <div className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-medium">
+                      מנהל
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {/* Add Manager Modal */}
+      {showAddManagerModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-secondary-800">
+                הוסף מנהל חדש
+              </h3>
+              <button
+                onClick={() => setShowAddManagerModal(false)}
+                className="p-1 hover:bg-secondary-100 rounded"
+              >
+                <X className="w-5 h-5 text-secondary-400" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateManager} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1">
+                  שם פרטי
+                </label>
+                <input
+                  type="text"
+                  value={newManagerForm.firstName}
+                  onChange={(e) =>
+                    setNewManagerForm({
+                      ...newManagerForm,
+                      firstName: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="שם פרטי"
+                  disabled={isCreatingManager}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1">
+                  שם משפחה
+                </label>
+                <input
+                  type="text"
+                  value={newManagerForm.lastName}
+                  onChange={(e) =>
+                    setNewManagerForm({
+                      ...newManagerForm,
+                      lastName: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="שם משפחה"
+                  disabled={isCreatingManager}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1">
+                  דוא"ל
+                </label>
+                <input
+                  type="email"
+                  value={newManagerForm.email}
+                  onChange={(e) =>
+                    setNewManagerForm({
+                      ...newManagerForm,
+                      email: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="example@email.com"
+                  disabled={isCreatingManager}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-secondary-700 mb-1">
+                  סיסמה
+                </label>
+                <input
+                  type="password"
+                  value={newManagerForm.password}
+                  onChange={(e) =>
+                    setNewManagerForm({
+                      ...newManagerForm,
+                      password: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-secondary-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="סיסמה"
+                  disabled={isCreatingManager}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={isCreatingManager}
+                  className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:bg-gray-400 transition-colors font-medium"
+                >
+                  {isCreatingManager ? "מוסיף..." : "הוסף מנהל"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddManagerModal(false)}
+                  disabled={isCreatingManager}
+                  className="flex-1 px-4 py-2 bg-secondary-200 text-secondary-800 rounded-lg hover:bg-secondary-300 disabled:bg-gray-300 transition-colors font-medium"
+                >
+                  ביטול
+                </button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
 
       {/* Quick Actions & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
