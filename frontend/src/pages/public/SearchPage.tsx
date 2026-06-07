@@ -6,6 +6,7 @@ import { professionalService } from '../../services/professional.service';
 import { categoryService } from '../../services/category.service';
 import type { Professional } from '../../types/professional.types';
 import type { Category } from '../../types/category.types';
+import type { Gender } from '../../types/user.types';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,13 +26,13 @@ export default function SearchPage() {
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'relevance');
 
   const cityOptions = Array.from(
-    new Set(allProfessionals.map((p) => p.city).filter(Boolean))
+    new Set(allProfessionals.map((p) => p.city).filter((c): c is string => !!c))
   )
     .sort()
     .map((city) => ({ value: city, label: city }));
 
   const genderOptions = Array.from(
-    new Set(allProfessionals.map((p) => p.gender).filter(Boolean))
+    new Set(allProfessionals.map((p) => p.gender).filter((g): g is Gender => !!g))
   )
     .sort()
     .map((gender) => ({ value: gender, label: gender }));
@@ -65,7 +66,7 @@ export default function SearchPage() {
             query: query || undefined,
             category: category || undefined,
             city: city || undefined,
-            gender: gender || undefined,
+            gender: (gender as Gender) || undefined,
             minRating: minRating ? parseInt(minRating) : undefined,
             shomerShabbat,
           }),

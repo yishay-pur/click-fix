@@ -29,51 +29,6 @@ export const getReviewById = async (req: Request, res: Response) => {
   }
 };
 
-export const getReviewsByEmployee = (req: Request, res: Response) => {
-  try {
-    const { employeeId } = req.query;
-    if (!employeeId) {
-      res.status(400).json({ message: "employeeId query parameter required" });
-      return;
-    }
-
-    // Query reviews by employee if needed
-    res.status(200).json([]);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching reviews", error });
-  }
-};
-
-export const getReviewsByUser = (req: Request, res: Response) => {
-  try {
-    const { userId } = req.query;
-    if (!userId) {
-      res.status(400).json({ message: "userId query parameter required" });
-      return;
-    }
-
-    // Query reviews by user if needed
-    res.status(200).json([]);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching reviews", error });
-  }
-};
-
-export const getReviewsByRating = (req: Request, res: Response) => {
-  try {
-    const { minRating } = req.query;
-    if (!minRating) {
-      res.status(400).json({ message: "minRating query parameter required" });
-      return;
-    }
-
-    // Query reviews by rating if needed
-    res.status(200).json([]);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching reviews", error });
-  }
-};
-
 export const createReview = async (req: Request, res: Response) => {
   try {
     const { userId, employeeId, categoryId, priceRate, serviceRate, performanceRate, comment } = req.body;

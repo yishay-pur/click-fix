@@ -50,51 +50,6 @@ export const getEmployeeById = async (req: Request, res: Response) => {
   }
 };
 
-export const getEmployeesByCategory = (req: Request, res: Response) => {
-  try {
-    const { categoryId } = req.query;
-    if (!categoryId) {
-      res.status(400).json({ message: "categoryId query parameter required" });
-      return;
-    }
-
-    // This endpoint would query employees by category if needed
-    res.status(200).json([]);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching employees" });
-  }
-};
-
-export const getEmployeesByArea = (req: Request, res: Response) => {
-  try {
-    const { area } = req.query;
-    if (!area) {
-      res.status(400).json({ message: "area query parameter required" });
-      return;
-    }
-
-    // This endpoint would query employees by area if needed
-    res.status(200).json([]);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching employees" });
-  }
-};
-
-export const getEmployeesByRating = (req: Request, res: Response) => {
-  try {
-    const { minRating } = req.query;
-    if (!minRating) {
-      res.status(400).json({ message: "minRating query parameter required" });
-      return;
-    }
-
-    // This endpoint would query employees by rating if needed
-    res.status(200).json([]);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching employees" });
-  }
-};
-
 export const createEmployee = async (req: Request, res: Response) => {
   try {
     const { firstName, lastName, area, gender, email, phone, description, yearsOfExperience, workingHours, services, certificates } = req.body;

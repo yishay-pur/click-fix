@@ -39,36 +39,6 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-export const getUserByEmail = (req: Request, res: Response) => {
-  try {
-    const { email } = req.query;
-    if (!email) {
-      res.status(400).json({ message: "email query parameter required" });
-      return;
-    }
-
-    // Query users by email if needed
-    res.status(200).json(null);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching user", error });
-  }
-};
-
-export const getUserByUsername = (req: Request, res: Response) => {
-  try {
-    const { username } = req.query;
-    if (!username) {
-      res.status(400).json({ message: "username query parameter required" });
-      return;
-    }
-
-    // Query users by username if needed
-    res.status(200).json(null);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching user", error });
-  }
-};
-
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { firstName, lastName, email, password, address } = req.body;
