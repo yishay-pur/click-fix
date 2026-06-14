@@ -271,23 +271,32 @@ export default function ProfessionalProfilePage() {
                 <h2 className="text-lg font-semibold text-secondary-800 mb-4">שירותים ומחירים</h2>
                 {services.length > 0 ? (
                   <div className="divide-y divide-secondary-100">
-                    {services.map((service: any, idx: number) => (
-                      <div key={service.id || idx} className="py-4 flex items-center justify-between">
-                        <div>
-                          <h3 className="font-medium text-secondary-800">{service.name}</h3>
-                          {service.description && (
-                            <p className="text-sm text-secondary-500 mt-1">{service.description}</p>
+                    {services.map((service: any, idx: number) => {
+                      const isString = typeof service === 'string';
+                      const name = isString ? service : service.name;
+                      const minPrice = isString ? null : service.minPrice;
+                      const maxPrice = isString ? null : service.maxPrice;
+                      const hasPrice = typeof minPrice === 'number' && typeof maxPrice === 'number';
+                      return (
+                        <div key={service.id || idx} className="py-4 flex items-center justify-between">
+                          <div>
+                            <h3 className="font-medium text-secondary-800">{name}</h3>
+                            {!isString && service.description && (
+                              <p className="text-sm text-secondary-500 mt-1">{service.description}</p>
+                            )}
+                          </div>
+                          {hasPrice && (
+                            <div className="text-left">
+                              <span className="font-semibold text-primary-600">
+                                {minPrice === maxPrice
+                                  ? `${minPrice} ש"ח`
+                                  : `${minPrice} - ${maxPrice} ש"ח`}
+                              </span>
+                            </div>
                           )}
                         </div>
-                        <div className="text-left">
-                          <span className="font-semibold text-primary-600">
-                            {service.minPrice === service.maxPrice
-                              ? `${service.minPrice} ש"ח`
-                              : `${service.minPrice} - ${service.maxPrice} ש"ח`}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-secondary-500">אין שירותים להצגה</p>

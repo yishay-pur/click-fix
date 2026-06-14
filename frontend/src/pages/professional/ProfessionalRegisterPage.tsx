@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,6 +51,7 @@ export default function ProfessionalRegisterPage() {
     control,
     watch,
     trigger,
+    setValue,
     formState: { errors },
   } = useForm<ProfessionalRegisterFormData>({
     resolver: zodResolver(professionalRegisterSchema),
@@ -60,6 +61,10 @@ export default function ProfessionalRegisterPage() {
       acceptTerms: false,
     },
   });
+
+  useEffect(() => {
+    setValue('services', services);
+  }, [services, setValue]);
 
   const categoryOptions = CATEGORIES.map((c) => ({ value: c.id, label: c.name }));
 

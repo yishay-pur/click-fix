@@ -32,8 +32,8 @@ export function ProfessionalCard({
   } = professional;
 
   const fullName = `${firstName} ${lastName}`;
-  const minPrice =
-    services?.length > 0 ? Math.min(...services.map((s) => s.minPrice)) : null;
+  const prices = services?.map((s) => s.minPrice).filter((p): p is number => typeof p === 'number' && p > 0) ?? [];
+  const minPrice = prices.length > 0 ? Math.min(...prices) : null;
 
   if (variant === 'compact') {
     return (
