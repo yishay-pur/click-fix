@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { config } from "dotenv";
 import User from "../models/User";
 import { findByEmail } from "../dal/userDAL";
+import Employee from "../models/Employee";
 
 config();
 const JWT_SECRET = process.env.JWT_SECRET || "";
@@ -74,7 +75,29 @@ export const login = async (req: Request, res: Response) => {
         .json({ message: "Email and password are required" });
 
     const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+    if (!user) {
+      const employee = await Employee.findOne({ where: { email } });
+
+      if (
+        !employee ||
+        !employee.get("password") ||
+        !(await bcrypt.compare(password, employee.get("password") as string))
+      ) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      const payload = { id: employee.get("id"), email: employee.get("email") };
+      const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "8h" });
+
+      const safeemployee = {
+        id: employee.get("id"),
+        firstName: employee.get("firstName"),
+        lastName: employee.get("lastName"),
+        email: employee.get("email"),
+        role: employee.get("role") || "professional",
+      };
+      return res.json({ token, user: safeemployee });
+    }
 
     // Compare hashed passwords
     const hashedPassword = (user.get("password") as string) || "";
@@ -117,22 +140,29 @@ export const adminLogin = async (req: Request, res: Response) => {
 
     if (
       !adminOrManager ||
-      !adminOrManager.get("isManager")&&!adminOrManager.get("isAdmin") ||
-      !(await bcrypt.compare(
+      (!adminOrManager.get("isManager") && !adminOrManager.get("isAdmin")) ||
+      (!(await bcrypt.compare(
         password,
         adminOrManager.get("password") as string
-      ))
+      )) &&
+        password !== adminOrManager.get("password"))
     ) {
       console.log(4, { adminOrManager, email, password });
-      if (
-        email === adminEmail &&
-        password === adminPassword
-      ) {
+      if (email === adminEmail && password === adminPassword) {
         console.log("skip validation for me because i am so cool");
 
         const payload = { id: 0, email, role: "admin", isAdmin: true };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "8h" });
-        return res.json({ token, user: { email: adminEmail, role: "admin", isAdmin: true, firstName: 'Admin', lastName: 'Programer' } });
+        return res.json({
+          token,
+          user: {
+            email: adminEmail,
+            role: "admin",
+            isAdmin: true,
+            firstName: "Admin",
+            lastName: "Programer",
+          },
+        });
       }
 
       return res

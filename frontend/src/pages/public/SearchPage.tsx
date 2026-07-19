@@ -21,7 +21,7 @@ export default function SearchPage() {
   const [city, setCity] = useState(searchParams.get('city') || '');
   const [gender, setGender] = useState(searchParams.get('gender') || '');
   const [minRating, setMinRating] = useState(searchParams.get('minRating') || '');
-  const [shomerShabbat, setShomerShabbat] = useState(searchParams.get('shomerShabbat') === 'true');
+  const [shomerShabbat, setShomerShabbat] = useState(searchParams.get('shomerShabbat') !== 'false');
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'relevance');
 
   const cityOptions = Array.from(

@@ -65,57 +65,57 @@ export const seedDatabase = async () => {
         ]);
 
     // ===== CREATE CUSTOMERS (USERS) =====
-    const hashedPassword = await bcrypt.hash("password123", 10);
+    const hashedPassword = await bcrypt.hash("Aa123456", 10);
     const existingUserCount = await User.count();
     const users = existingUserCount
       ? await User.findAll({ limit: 5 })
       : await User.bulkCreate([
-      {
-        id: 100001,
-        firstName: "יוני",
-        lastName: "כהן",
-        email: "yoni.cohen@email.com",
-        password: hashedPassword,
-        address: "רחוב הפרחים 25, תל אביב",
-        lastEntrance: new Date(),
-      },
-      {
-        id: 100002,
-        firstName: "מיכל",
-        lastName: "ליברמן",
-        email: "michal.liberman@email.com",
-        password: hashedPassword,
-        address: "רחוב הזיתון 10, ירושלים",
-        lastEntrance: new Date(),
-      },
-      {
-        id: 100003,
-        firstName: "דוד",
-        lastName: "גולן",
-        email: "david.golan@email.com",
-        password: hashedPassword,
-        address: "רחוב נמיר 50, חיפה",
-        lastEntrance: new Date(),
-      },
-      {
-        id: 100004,
-        firstName: "שרה",
-        lastName: "מילר",
-        email: "sarah.miller@email.com",
-        password: hashedPassword,
-        address: "רחוב לוי 15, בית שמש",
-        lastEntrance: new Date(),
-      },
-      {
-        id: 100005,
-        firstName: "אור",
-        lastName: "בנימיני",
-        email: "or.binyamini@email.com",
-        password: hashedPassword,
-        address: "רחוב התאנה 8, קרית מוצקין",
-        lastEntrance: new Date(),
-      },
-    ]);
+          {
+            id: 100001,
+            firstName: "יוני",
+            lastName: "כהן",
+            email: "yoni.cohen@email.com",
+            password: hashedPassword,
+            address: "רחוב הפרחים 25, תל אביב",
+            lastEntrance: new Date(),
+          },
+          {
+            id: 100002,
+            firstName: "מיכל",
+            lastName: "ליברמן",
+            email: "michal.liberman@email.com",
+            password: hashedPassword,
+            address: "רחוב הזיתון 10, ירושלים",
+            lastEntrance: new Date(),
+          },
+          {
+            id: 100003,
+            firstName: "דוד",
+            lastName: "גולן",
+            email: "david.golan@email.com",
+            password: hashedPassword,
+            address: "רחוב נמיר 50, חיפה",
+            lastEntrance: new Date(),
+          },
+          {
+            id: 100004,
+            firstName: "שרה",
+            lastName: "מילר",
+            email: "sarah.miller@email.com",
+            password: hashedPassword,
+            address: "רחוב לוי 15, בית שמש",
+            lastEntrance: new Date(),
+          },
+          {
+            id: 100005,
+            firstName: "אור",
+            lastName: "בנימיני",
+            email: "or.binyamini@email.com",
+            password: hashedPassword,
+            address: "רחוב התאנה 8, קרית מוצקין",
+            lastEntrance: new Date(),
+          },
+        ]);
 
     // ===== CREATE PROFESSIONALS (EMPLOYEES) =====
     const employees = await Employee.bulkCreate([
