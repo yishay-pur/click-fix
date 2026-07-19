@@ -79,7 +79,7 @@ export function Header() {
 
                 {user?.role === 'customer' && (
                   <>
-                    <Link
+                    {/* <Link
                       to='/favorites'
                       className='relative group p-2 rounded-lg text-secondary-500 hover:text-primary-600 hover:bg-primary-50 transition-colors'
                     >
@@ -87,7 +87,7 @@ export function Header() {
                       <span className='absolute top-full mt-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-secondary-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50'>
                         מועדפים
                       </span>
-                    </Link>
+                    </Link> */}
                     <Link
                       to='/quotes'
                       className='relative group p-2 rounded-lg text-secondary-500 hover:text-primary-600 hover:bg-primary-50 transition-colors'
@@ -200,14 +200,14 @@ export function Header() {
 
                   {user?.role === 'customer' && (
                     <>
-                      <Link
+                      {/* <Link
                         to='/favorites'
                         onClick={() => setIsMobileMenuOpen(false)}
                         className='flex items-center gap-3 px-4 py-3 text-secondary-600 hover:bg-secondary-50 rounded-lg'
                       >
                         <Heart className='w-8 h-8' />
                         מועדפים
-                      </Link>
+                      </Link> */}
                       <Link
                         to='/quotes'
                         onClick={() => setIsMobileMenuOpen(false)}

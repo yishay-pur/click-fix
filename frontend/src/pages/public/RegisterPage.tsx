@@ -4,7 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, UserPlus } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { Button, Input, Card, AddressAutocomplete } from '../../components/common';
+import {
+  Button,
+  Input,
+  Card,
+  AddressAutocomplete,
+} from '../../components/common';
 import { useAuthStore } from '../../store/authStore';
 import { registerSchema, RegisterFormData } from '../../utils/validators';
 import { searchCities, searchStreets } from '../../api/address.api';
@@ -60,7 +65,9 @@ export default function RegisterPage() {
         <Card>
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
             <div className='text-center mb-6'>
-              <h2 className='text-2xl font-semibold text-secondary-800'>הרשמה</h2>
+              <h2 className='text-2xl font-semibold text-secondary-800'>
+                הרשמה
+              </h2>
             </div>
 
             {/* Name */}
@@ -106,7 +113,11 @@ export default function RegisterPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className='absolute left-3 top-[42px] text-secondary-400 hover:text-secondary-600'
               >
-                {showPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                {showPassword ? (
+                  <EyeOff className='w-5 h-5' />
+                ) : (
+                  <Eye className='w-5 h-5' />
+                )}
               </button>
             </div>
 
@@ -124,13 +135,19 @@ export default function RegisterPage() {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className='absolute left-3 top-[42px] text-secondary-400 hover:text-secondary-600'
               >
-                {showConfirmPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
+                {showConfirmPassword ? (
+                  <EyeOff className='w-5 h-5' />
+                ) : (
+                  <Eye className='w-5 h-5' />
+                )}
               </button>
             </div>
 
             {/* Address section */}
             <div className='pt-1'>
-              <p className='text-sm font-medium text-secondary-600 mb-3'>כתובת (אופציונלי)</p>
+              <p className='text-sm font-medium text-secondary-600 mb-3'>
+                כתובת (אופציונלי)
+              </p>
 
               {/* City + Street */}
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4'>
@@ -155,10 +172,14 @@ export default function RegisterPage() {
                   render={({ field }) => (
                     <AddressAutocomplete
                       label='רחוב'
-                      placeholder={selectedCity ? 'התחל להקליד רחוב...' : 'בחר עיר תחילה'}
+                      placeholder={
+                        selectedCity ? 'התחל להקליד רחוב...' : 'בחר עיר תחילה'
+                      }
                       value={field.value || ''}
                       onChange={field.onChange}
-                      fetchSuggestions={(q) => searchStreets(selectedCity || '', q)}
+                      fetchSuggestions={(q) =>
+                        searchStreets(selectedCity || '', q)
+                      }
                       disabled={!selectedCity}
                       error={errors.street?.message}
                       name='street'
@@ -185,14 +206,13 @@ export default function RegisterPage() {
           <div className='mt-6 text-center'>
             <p className='text-secondary-600'>
               כבר יש לך חשבון?{' '}
-              <Link to='/login' className='text-primary-600 hover:text-primary-700 font-medium'>
+              <Link
+                to='/login'
+                className='text-primary-600 hover:text-primary-700 font-medium'
+              >
                 התחברות
               </Link>
             </p>
-          </div>
-
-          <div className='mt-4 text-center' style={{ opacity: '0.5' }}>
-            הרשמה כבעל מקצוע (בקרוב)
           </div>
         </Card>
       </div>

@@ -114,15 +114,6 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
-
-          <div className='mt-4 text-center'>
-            <Link
-              to='/pro/register'
-              className='text-sm text-secondary-500 hover:text-secondary-700'
-            >
-              הרשמה כבעל מקצוע
-            </Link>
-          </div>
         </Card>
       </div>
     </div>
