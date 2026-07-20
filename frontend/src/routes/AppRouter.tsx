@@ -100,7 +100,7 @@ const AppContent = () => {
         </Route>
 
         {/* ADMIN */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route element={<ProtectedRoute allowedRoles={['admin', 'manager']} />}>
           <Route element={<MainLayout />}>
             <Route path='/admin' element={<AdminDashboard />} />
             <Route path='/admin/approvals' element={<ApprovalsPage />} />

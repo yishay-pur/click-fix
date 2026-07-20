@@ -1,4 +1,4 @@
-export type UserRole = 'guest' | 'customer' | 'professional' | 'admin';
+export type UserRole = 'guest' | 'customer' | 'professional' | 'admin'|'manager';
 export type Gender = 'male' | 'female' | 'other';
 export type UserStatus = 'active' | 'pending' | 'blocked';
 

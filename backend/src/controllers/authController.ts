@@ -173,6 +173,8 @@ export const adminLogin = async (req: Request, res: Response) => {
     const payload = {
       id: 0,
       email: adminOrManager.get("email"),
+      isAdmin: adminOrManager.get("isAdmin"),
+      isManager: adminOrManager.get("isManager"),
       role: adminOrManager.get("isAdmin") ? "admin" : "manager",
     };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "8h" });
